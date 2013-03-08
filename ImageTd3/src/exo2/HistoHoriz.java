@@ -9,13 +9,12 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.plaf.basic.BasicScrollPaneUI.HSBChangeListener;
 
-public class Histogramme extends JPanel {
+public class HistoHoriz extends JPanel {
 
-	public Histogramme() {
+	public HistoHoriz() {
 		// TODO Auto-generated constructor stub
-		super(new BorderLayout());
+		super( new BorderLayout());
 
 		BufferedImage bi = null;
 		BufferedImage bi2 = null;
@@ -27,41 +26,68 @@ public class Histogramme extends JPanel {
 			e.printStackTrace();
 		}
 
-		bi2 = plotHistogram(bi);
+		BufferedImage bi3 = imageNB(bi);
+		bi2 = plotHistogram(bi3);
 
 		ImageIcon ii = new ImageIcon(bi);
 		JLabel label = new JLabel();
 		label.setIcon(ii);
-		this.add(label, BorderLayout.CENTER);
+		this.add(label, BorderLayout.WEST);
+
+		ImageIcon ii3 = new ImageIcon(bi3);
+		JLabel jl3 = new JLabel();
+		jl3.setIcon(ii3);
+		this.add(jl3, BorderLayout.CENTER);
 
 		ImageIcon ii2 = new ImageIcon(bi2);
 		JLabel label2 = new JLabel();
 		label2.setIcon(ii2);
 		this.add(label2, BorderLayout.EAST);
+	}
 
+	public static BufferedImage imageNB(BufferedImage bi){
+
+		BufferedImage avg = new BufferedImage(bi.getWidth(), bi.getHeight(), bi.getType());
+		int newPixel;
+		int red, blue, green;
+
+		for(int i=0; i<avg.getWidth(); i++){
+			for(int j=0; j<avg.getHeight(); j++){
+
+				red = new Color(bi.getRGB(i, j)).getRed();
+				green = new Color(bi.getRGB(i, j)).getGreen();
+				blue = new Color(bi.getRGB(i, j)).getBlue();
+
+				newPixel = (red + green + blue)/3;
+
+				if(newPixel < 215)
+					avg.setRGB(i, j, HistoHoriz.mixColor(0, 0, 0));
+				else
+					avg.setRGB(i, j, HistoHoriz.mixColor(255, 255, 255));
+			}
+		}
+		return avg;
 	}
 
 	public static BufferedImage plotHistogram(BufferedImage bi){
 
-		//int pixels[] = getPixelsHorizontal(bi);
-
-		int red, green, blue;
-		int width = 256;
+		int width = bi.getWidth();
 		int height = bi.getHeight();
+		int red, green, blue;
 		int pixel;
-		int[] pixels = new int[256];
+		int[] pixels = new int[height];
 		Color color;
+
 		BufferedImage avg = new BufferedImage(width, height, bi.getType());
-		//System.out.println("width: " + width + " height: " + height + " type: " + bi.getType());
 
 		for(int i=0; i<pixels.length; i++){
 			pixels[i]  = 0;
 		}
-		
+
 		for(int i = 0; i<width; i++){
 			for(int j = 0; j<height; j++){
-		//initialze avg to white color
-		avg.setRGB(i, j, Histogramme.mixColor(255, 255, 255));
+				//initialze avg to white color
+				avg.setRGB(i, j, HistoHoriz.mixColor(255, 255, 255));
 			}
 		}
 
@@ -75,25 +101,24 @@ public class Histogramme extends JPanel {
 
 				pixel = (red + green + blue)/3;
 				//System.out.println("pixel[" +i+", " +j+ "]= " + pixel);
-				pixels[pixel] ++;
-				//System.out.println("\npixels table[" + pixel + "]: " + pixels[pixel]);
+
+				//we count our black pixels in a binary image
+				if(pixel == 0){ 
+					pixels[j] ++;
+					//System.out.println("pixels[" + j + "]: " + pixels[j]);
+				}
 			}
 		}
-		
-		for(int i=0; i<pixels.length; i++){
-			//System.out.println(" pixels["+ i + "]: " + pixels[i]);
-			if(pixels[i] > height) pixels[i] = height-1;
-			//System.out.println(" pixels["+ i + "]: " + pixels[i]);
+
+		for(int i =width-1; i>0; i--){
+			for(int j =0; j<height; j++){
+				if(pixels[j] != 0){
+					avg.setRGB(i, j, HistoHoriz.mixColor(0, 0, 0));
+					pixels[j]--;
+				}
+			}
 		}
 
-		for(int i =0; i<256; i++){
-			int j=height-1;
-			do{				
-				//System.out.println("j: " + j + " pixels["+ i + "]: " + pixels[i]);
-				avg.setRGB(i, j, Histogramme.mixColor(0, 0, 0));
-				j--;
-			}while(j>0 && j>height-pixels[i]);
-		}
 		return avg;
 	}
 
