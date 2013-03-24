@@ -15,10 +15,11 @@ public class ImageGrayScale extends JPanel {
 	public ImageGrayScale() {
 		// TODO Auto-generated constructor stub
 		super(new BorderLayout());
+		this.image = new LoadImage();
 		
 		int newPixel;
-		this.biGray = new BufferedImage(bi.getWidth(), bi.getHeight(), bi.getType());
-		
+		//this.biGray = new BufferedImage(image.loadImage().getWidth(), bi.getHeight(), bi.getType());
+		/*
 		for(int i=0; i<bi.getWidth(); i++){
 			for(int j=0; j<bi.getHeight(); j++){
 				
@@ -28,7 +29,7 @@ public class ImageGrayScale extends JPanel {
 				biGray.setRGB(i, j, newPixel);
 			}
 		}
-		
+		*/
 	}
 
 	private static int colorToRGB(int alpha, int red, int green, int blue) {

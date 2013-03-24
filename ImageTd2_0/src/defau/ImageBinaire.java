@@ -62,7 +62,8 @@ public class ImageBinaire extends JPanel{
 				if(newPixel < 127)
 					avg_gray.setRGB(i, j, ImageBinaire.mixColor(0, 0, 0));
 				else avg_gray.setRGB(i, j, ImageBinaire.mixColor(255, 255, 255));
-			}}
+			}
+		}
 
 		return avg_gray;
 	}
