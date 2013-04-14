@@ -90,7 +90,6 @@ public class TD3Convolution extends JPanel {
 
 				if(i==width-1 && j>0 && j<height-1)
 					newPixel = (int) ((bi.getRGB(i, j)*matrix[4]) + (bi.getRGB(i-1, j-1)*matrix[0]) + (bi.getRGB(i-1, j)*matrix[1]) + (bi.getRGB(i-1, j+1)*matrix[2]) + (bi.getRGB(i, j-1)*matrix[3]) + (bi.getRGB(i, j+1)*matrix[5]));
-
 				
 				avg_gray.setRGB(i, j, newPixel);
 				

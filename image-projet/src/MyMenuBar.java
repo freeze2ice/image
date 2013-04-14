@@ -1,8 +1,7 @@
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -11,50 +10,39 @@ import javax.swing.JPanel;
 
 
 public class MyMenuBar extends JMenuBar {
-	
-	JPanel panel;
-	JFrame frame;
-
+		
 	public MyMenuBar() {
 		// TODO Auto-generated constructor stub
 		super.setBackground(Color.GRAY);
 		
-		this.panel = new Qcm();
-		this.frame = new MyFrame();
-		
 		JMenu mFile = new JMenu("File"); 
 		mFile.setBackground(Color.GRAY);
 		this.add(mFile);
-		JMenu load = new JMenu("Load");
-		mFile.add(load);
+		JMenu draw = new JMenu("Draw");
+		this.add(draw);
 		JMenuItem iExit = new JMenuItem("Exit");
 		mFile.add(iExit);
 		
+		final JFileChooser jfc = new JFileChooser();
 		iExit.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				frame.dispose();
+				//frame.dispose();
 			}
 		});
 		
-		final JMenuItem loadImage = new JMenuItem("Load Image");
-		load.add(loadImage);
+		final JMenuItem open = new JMenuItem("Open");
+		mFile.add(open);
 		
-		loadImage.addActionListener(new ActionListener() {
+		open.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				frame.setVisible(true);
-				frame.getContentPane().add(panel, BorderLayout.SOUTH);
+				jfc.showOpenDialog(getParent());
 			}
 		});
 		
-		
-		//frame.setSize(400, 200);
-		frame.setVisible(true);
 	}
 
 }

@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -26,9 +27,15 @@ public class Dilatation extends JPanel {
 		}
 
 		bi = imageNB(bi);
-		BufferedImage bi2 = dilatation1(bi);	
-		BufferedImage bi3 = erosion(bi2);
-		
+		BufferedImage bi2 = null;
+		// fermeture
+		//bi2 = dilatation(bi);
+		//bi2 = erosion(bi2);
+
+		// ouverture
+		bi2 = erosion(bi);
+		bi2 = dilatation(bi2);
+
 		/*
 		ImageIcon ii = new ImageIcon(bi);
 		JLabel jl = new JLabel();
@@ -39,8 +46,8 @@ public class Dilatation extends JPanel {
 		JLabel jl2 = new JLabel();
 		jl2.setIcon(ii2);
 		this.add(jl2, BorderLayout.WEST);
-		
-		ImageIcon ii3 = new ImageIcon(bi3);
+
+		ImageIcon ii3 = new ImageIcon(bi);
 		JLabel jl3 = new JLabel();
 		jl3.setIcon(ii3);
 		this.add(jl3, BorderLayout.EAST);
@@ -75,6 +82,26 @@ public class Dilatation extends JPanel {
 		return red<<16|green<<8|blue;
 	}
 
+	public static BufferedImage dilatation(BufferedImage bi){
+
+		BufferedImage avg = new BufferedImage(bi.getWidth(), bi.getHeight(), bi.getType());
+		int[] b = {1,1,1,1};
+		int max = 0;
+		int[] newPixel = new int[b.length];
+		for(int i=0; i<bi.getWidth()-1; i++){
+			for(int j=0; j<bi.getHeight()-1; j++){
+				newPixel[0] = bi.getRGB(i, j)*b[0];
+				newPixel[1] = bi.getRGB(i+1, j)*b[1];
+				newPixel[2] = bi.getRGB(i, j+1)*b[2];
+				newPixel[3] = bi.getRGB(i+1, j+1)*b[3];
+				Arrays.sort(newPixel);
+				max = newPixel[3];
+				avg.setRGB(i, j, max);
+			}
+		}
+		return avg;
+	}
+
 	public static BufferedImage dilatation1(BufferedImage bi){
 
 		BufferedImage avg = new BufferedImage(bi.getWidth(), bi.getHeight(), bi.getType());
@@ -102,11 +129,11 @@ public class Dilatation extends JPanel {
 
 		return avg;
 	}
-	
-	public static BufferedImage erosion(BufferedImage bi){
-		
+
+	public static BufferedImage erosion1(BufferedImage bi){
+
 		BufferedImage avg = new BufferedImage(bi.getWidth(), bi.getHeight(), bi.getType());
-			
+
 		int red, green, blue;
 		int newpixel;
 
@@ -119,10 +146,10 @@ public class Dilatation extends JPanel {
 
 				newpixel = (red + green + blue)/3;
 				//System.out.println("newpixel: " + newpixel);
-				
+
 				//initializing avg bufferedimage to white
 				avg.setRGB(i, j, Dilatation.mixColor(255, 255, 255));
-				
+
 				if(newpixel == 0){
 					if(i>1) avg.setRGB(i-1, j, Dilatation.mixColor(0, 0, 0)); //north pixel
 					if(j>1) avg.setRGB(i, j-1, Dilatation.mixColor(0, 0, 0)); //west pixel
@@ -131,7 +158,28 @@ public class Dilatation extends JPanel {
 				} 
 			} 
 		}
-		
+
 		return avg;
 	}
+
+	public static BufferedImage erosion(BufferedImage bi){
+
+		BufferedImage avg = new BufferedImage(bi.getWidth(), bi.getHeight(), bi.getType());
+		int[] b = {1,1,1,1};
+		int min = 1;
+		int[] newPixel = new int[b.length];
+		for(int i=0; i<bi.getWidth()-1; i++){
+			for(int j=0; j<bi.getHeight()-1; j++){
+				newPixel[0] = bi.getRGB(i, j)*b[0];
+				newPixel[1] = bi.getRGB(i+1, j)*b[1];
+				newPixel[2] = bi.getRGB(i, j+1)*b[2];
+				newPixel[3] = bi.getRGB(i+1, j+1)*b[3];
+				Arrays.sort(newPixel);
+				min = newPixel[0];
+				avg.setRGB(i, j, min);
+			}
+		}
+		return avg;
+	}
+
 }

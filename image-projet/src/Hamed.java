@@ -1,4 +1,5 @@
 import java.awt.BorderLayout;
+import java.io.File;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -15,17 +16,19 @@ public class Hamed {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-
+		File image = new File("qcms/QcmImage.jpg");
 		JFrame frame = new JFrame();
-		//JMenuBar menuBar = new MyMenuBar();
-		JPanel panel = new Qcm();
-		//frame.getContentPane().add(menuBar, BorderLayout.NORTH);
+		JPanel panel = new Qcm(image);
 		frame.getContentPane().add(panel, BorderLayout.SOUTH);
 		frame.setLocation(300, 300);
-		//frame.setSize(600, 200);
 		frame.pack();
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);
+	
+		/*
+		JFrame frame = new MyFrame();
+		frame.setVisible(true);
+		*/
 	}
 
 }

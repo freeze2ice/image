@@ -2,7 +2,9 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -10,58 +12,51 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
 
-public class MyFrame extends JFrame{
-	
-	JPanel panel;
+public class MyFrame extends JFrame implements ActionListener {
 	
 	public MyFrame() {
 		// TODO Auto-generated constructor stub
 		super();
-			
-		this.panel = new Qcm();
 		
-		JMenuBar myMenuBar = new JMenuBar();
+		JMenuBar menuBar = new JMenuBar();
+		menuBar.setBackground(Color.GRAY);
+		setJMenuBar(menuBar);
+		
 		JMenu mFile = new JMenu("File"); 
-		mFile.setBackground(Color.GRAY);
-		myMenuBar.add(mFile);
-		JMenu load = new JMenu("Load");
-		mFile.add(load);
-		JMenuItem iExit = new JMenuItem("Exit");
-		mFile.add(iExit);
+		menuBar.add(mFile);
 		
-		iExit.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				MyFrame.this.dispose();
+		JMenu draw = new JMenu("Draw");
+		menuBar.add(draw);
+		
+		mFile.add(createMenuItem("Open"));
+		mFile.add(createMenuItem("Exit"));
+		
+		setLocation(300, 300);
+		setSize(600, 400);		
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		JFileChooser jfc = new JFileChooser();
+		File f = null;
+		String command = e.getActionCommand();
+		if(command.equals("Exit"))
+			this.dispose();
+		else if(command.equals("Open")){
+			jfc.showOpenDialog(this);
+			if(jfc.getSelectedFile() != null){
+				f = jfc.getSelectedFile();
+				JPanel panel = new Qcm(f);
+				MyFrame.this.getContentPane().add(panel, BorderLayout.CENTER);
 			}
-		});
-		
-		final JMenuItem loadImage = new JMenuItem("Load Image");
-		load.add(loadImage);
-		
-		loadImage.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				//MyFrame.this.setVisible(true);
-				MyFrame.this.getContentPane().add(panel, BorderLayout.SOUTH);
-				repaint();
-			}
-		});
-		
-		
-		this.getContentPane().add(myMenuBar, BorderLayout.NORTH);
-		this.setLocation(300, 300);
-		this.setSize(600, 400);
-		this.setVisible(true);
-		
+		}
 	}
 	
-	public void addPanel(JPanel panel){
-		MyFrame.this.getContentPane().add(panel);
+	public JMenuItem createMenuItem(String name){
+		JMenuItem m = new JMenuItem(name);
+		m.addActionListener(this);
+		return m;
 	}
 
 }
