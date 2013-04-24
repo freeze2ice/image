@@ -16,7 +16,7 @@ public class Hamed {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		File image = new File("qcms/QcmImage.jpg");
+		File image = new File("qcms/qcm32.jpg");
 		JFrame frame = new JFrame();
 		JPanel panel = new Qcm(image);
 		frame.getContentPane().add(panel, BorderLayout.SOUTH);
