@@ -46,7 +46,7 @@ public class Qcm extends JPanel {
 		bi2 = binarizeImage(bi2, 240);
 		// bi3= plotHistogram(bi2);
 		
-		bi3 = blueFilter(bi);
+		bi3 = colorFilter(bi);
 
 		// ouverture
 		// bi3 = erosion(bi2);
@@ -461,7 +461,7 @@ public class Qcm extends JPanel {
 		System.out.println("point: " + x + " " + y);
 	}
 	
-	public static BufferedImage blueFilter(BufferedImage image){
+	public static BufferedImage colorFilter(BufferedImage image){
 		BufferedImage output = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
 		for(int x=0; x<image.getWidth(); x++){
 			for(int y=0; y<image.getHeight(); y++){	
