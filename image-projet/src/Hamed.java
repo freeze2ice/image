@@ -3,7 +3,7 @@ import java.io.File;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-
+import javax.swing.JScrollPane;
 
 public class Hamed {
 
@@ -16,14 +16,14 @@ public class Hamed {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		File image = new File("qcms/qcm32.jpg");
+		File image = new File("qcms/qcmcolor.jpg");
 		JFrame frame = new JFrame();
 		JPanel panel = new Qcm(image);
-		frame.getContentPane().add(panel, BorderLayout.SOUTH);
-		frame.setLocation(300, 300);
+		frame.getContentPane().add(panel, BorderLayout.NORTH);
+		frame.setLocation(250, 300);
 		frame.pack();
 		frame.setVisible(true);
-		frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	
 		/*
 		JFrame frame = new MyFrame();

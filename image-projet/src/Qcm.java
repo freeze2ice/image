@@ -1,22 +1,20 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
-import java.awt.image.ColorConvertOp;
 import java.awt.image.ConvolveOp;
 import java.awt.image.Kernel;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
-
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
 
 public class Qcm extends JPanel {
 
@@ -32,33 +30,19 @@ public class Qcm extends JPanel {
 			e.printStackTrace();
 		}
 
-		/*
-		 * float[] matrix = {1, 1 ,1 ,1 ,1 ,1 ,1 ,1, 1}; 
-		 * float[] matrix2 = {1/9, 1/9, 1/9, 1/9, 1/9, 1/9, 1/9, 1/9, 1/9 }; 
-		 * float[] matrix3 = {-1, -1, -1, -1, -9, -1, -1, -1, -1};
-		 * float[] matrixY = {1, 2, 1, 0, 0, 0, -1, -2, -1}; 
-		 * float[] matrixX = {1, 0, -1, 2, 0, -2, 1, 0, -1}; 
-		 * float[] matrix1 = {0, -1, 0, -1, 5, -1, 0, -1, 0 };
-		 */
-
 		BufferedImage bi3;
-		BufferedImage bi2 = grayImage(bi);
-		bi2 = binarizeImage(bi2, 240);
+		BufferedImage bi2;
+		//bi2 = grayImage(bi);
+		//bi2 = binarizeImage(bi2, 240);
 		// bi3= plotHistogram(bi2);
-		
-		bi3 = colorFilter(bi);
 
-		// ouverture
-		// bi3 = erosion(bi2);
-		// bi3 = dilatation(bi3);
+		bi3 = colorFilter(bi, 450);
+		bi3 = grayImage(bi3);
+		bi3 = binarizeImage(bi3, 250);
 
-		//bi3 = filter1(bi2);
-		// bi2 = plotVertiHistogram(bi3);
-		//bi3 = extractObject(bi3, 10);
-		// bi3 = plotHorizHistogram(bi3);
-		//bi3 = extractObjectHoriz(bi3, 3, 6);
-		// bi3 = plotVertiHistogram(bi3);
-		// bi3 = plotHorizHistogram(bi3);
+		bi3 = ouverture(bi3);
+
+		bi3 = fourConnectivity(bi3);
 
 		ImageIcon icon = new ImageIcon(bi);
 		JLabel label = new JLabel();
@@ -91,34 +75,28 @@ public class Qcm extends JPanel {
 	}
 
 	public static BufferedImage grayImage(BufferedImage image) {
-
-		BufferedImage output = new BufferedImage(image.getWidth(),
-				image.getHeight(), image.getType());
-
+		BufferedImage output = new BufferedImage(image.getWidth(),image.getHeight(), image.getType());
 		int pixel = 0;
-
 		for (int x = 0; x < image.getWidth(); x++) {
 			for (int y = 0; y < image.getHeight(); y++) {
-				pixel = Qcm.getPixel(image, x, y) / 3;
-				pixel = Qcm.mixColor(pixel, pixel, pixel);
+				pixel =  getPixel(image, x, y) / 3;
+				pixel =  mixColor(pixel, pixel, pixel);
 				output.setRGB(x, y, pixel);
 			}
 		}
 		return output;
 	}
 
-	public static BufferedImage binarizeImage(BufferedImage grayImage,
-			int threshold) {
-		BufferedImage output = new BufferedImage(grayImage.getWidth(),
-				grayImage.getHeight(), grayImage.getType());
+	public static BufferedImage binarizeImage(BufferedImage grayImage, int threshold) {
+		BufferedImage output = new BufferedImage(grayImage.getWidth(), grayImage.getHeight(), grayImage.getType());
 		int pixel = 0;
 		for (int x = 0; x < grayImage.getWidth(); x++) {
 			for (int y = 0; y < grayImage.getHeight(); y++) {
-				pixel = Qcm.getPixel(grayImage, x, y) / 3;
+				pixel =  getPixel(grayImage, x, y) / 3;
 				if (pixel > threshold) {
-					output.setRGB(x, y, Qcm.mixColor(255, 255, 255));
+					output.setRGB(x, y,  mixColor(0, 0, 0));
 				} else {
-					output.setRGB(x, y, Qcm.mixColor(0, 0, 0));
+					output.setRGB(x, y,  mixColor(255, 255, 255));
 				}
 			}
 		}
@@ -165,6 +143,20 @@ public class Qcm extends JPanel {
 		return output;
 	}
 
+	public static BufferedImage ouverture(BufferedImage image){
+		BufferedImage output = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
+		output = dilatation(image);
+		output = erosion(image);
+		return output;
+	}
+
+	public static BufferedImage fermeture(BufferedImage image){
+		BufferedImage output = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
+		output = erosion(image);
+		output = dilatation(image);
+		return output;
+	}
+
 	public static BufferedImage plotHistogram(BufferedImage image) {
 		int width = 256;
 		int height = image.getHeight();
@@ -177,12 +169,12 @@ public class Qcm extends JPanel {
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
 				// initialze output to white color
-				output.setRGB(i, j, Qcm.mixColor(255, 255, 255));
+				output.setRGB(i, j,  mixColor(255, 255, 255));
 			}
 		}
 		for (int x = 0; x < image.getWidth(); x++) {
 			for (int y = 0; y < image.getHeight(); y++) {
-				pixel = Qcm.getPixel(image, x, y) / 3;
+				pixel =  getPixel(image, x, y) / 3;
 				pixels[pixel]++;
 			}
 		}
@@ -193,7 +185,7 @@ public class Qcm extends JPanel {
 		for (int x = 0; x < 256; x++) {
 			int y = height - 1;
 			do {
-				output.setRGB(x, y, Qcm.mixColor(0, 0, 0));
+				output.setRGB(x, y,  mixColor(0, 0, 0));
 				y--;
 			} while (y > 0 && y > height - pixels[x]);
 		}
@@ -216,16 +208,16 @@ public class Qcm extends JPanel {
 		for (int x = 0; x < image.getWidth(); x++) {
 			for (int y = 0; y < image.getHeight(); y++) {
 				// initialze output to white color
-				output.setRGB(x, y, Qcm.mixColor(255, 255, 255));
+				output.setRGB(x, y,  mixColor(255, 255, 255));
 				// we count our black pixels in a binary image
-				if (Qcm.getPixel(image, x, y) == 0)
+				if ( getPixel(image, x, y) == 0)
 					pixels[y]++;
 			}
 		}
 		for (int x = width - 1; x > 0; x--) {
 			for (int y = 0; y < height; y++) {
 				if (pixels[y] != 0) {
-					output.setRGB(x, y, Qcm.mixColor(0, 0, 0));
+					output.setRGB(x, y,  mixColor(0, 0, 0));
 					pixels[y]--;
 				}
 			}
@@ -243,13 +235,13 @@ public class Qcm extends JPanel {
 		for (int x = 0; x < image.getWidth(); x++) {
 			for (int y = 0; y < image.getHeight(); y++) {
 				// initialze output to white color
-				output.setRGB(x, y, Qcm.mixColor(255, 255, 255));
+				output.setRGB(x, y,  mixColor(255, 255, 255));
 			}
 		}
 		for (int x = 0; x < image.getWidth(); x++) {
 			for (int y = 0; y < image.getHeight(); y++) {
 				// we count our black pixels in a binary image
-				if (Qcm.getPixel(image, x, y) == 0)
+				if ( getPixel(image, x, y) == 0)
 					pixels[x]++;
 			}
 		}
@@ -257,201 +249,7 @@ public class Qcm extends JPanel {
 		for (int x = 0; x < image.getWidth(); x++) {
 			for (int y = image.getHeight() - 1; y > image.getHeight()
 					- pixels[x]; y--) {
-				output.setRGB(x, y, Qcm.mixColor(0, 0, 0));
-			}
-		}
-		return output;
-	}
-
-	public static BufferedImage convolve3x3(BufferedImage image, float[] matrix) {
-		int width = image.getWidth();
-		int height = image.getHeight();
-		int pixel = 0;
-		BufferedImage output = new BufferedImage(width, height, image.getType());
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
-				if ((x > 0 && y > 0) && (x < width - 1 && y < height - 1))
-					pixel = (int) ((image.getRGB(x, y) * matrix[4])
-							+ (image.getRGB(x - 1, y - 1) * matrix[0])
-							+ (image.getRGB(x - 1, y) * matrix[1])
-							+ (image.getRGB(x - 1, y + 1) * matrix[2])
-							+ (image.getRGB(x, y - 1) * matrix[3])
-							+ (image.getRGB(x, y + 1) * matrix[5])
-							+ (image.getRGB(x + 1, y - 1) * matrix[6])
-							+ (image.getRGB(x + 1, y) * matrix[7]) + (image
-							.getRGB(x + 1, y + 1) * matrix[8]));
-				if (x == 0 && y == 0)
-					pixel = (int) ((image.getRGB(x, y) * matrix[4])
-							+ (image.getRGB(x, y + 1) * matrix[5])
-							+ (image.getRGB(x + 1, y) * matrix[7]) + (image
-							.getRGB(x + 1, y + 1) * matrix[8]));
-				if (x == 0 && y == height - 1)
-					pixel = (int) ((image.getRGB(x, y) * matrix[4])
-							+ (image.getRGB(x, y - 1) * matrix[3])
-							+ (image.getRGB(x + 1, y - 1) * matrix[6]) + (image
-							.getRGB(x + 1, y) * matrix[7]));
-				if (x == width - 1 && y == 0)
-					pixel = (int) ((image.getRGB(x, y) * matrix[4])
-							+ (image.getRGB(x - 1, y) * matrix[1])
-							+ (image.getRGB(x - 1, y + 1) * matrix[2]) + (image
-							.getRGB(x, y + 1) * matrix[5]));
-				if (x == width - 1 && y == height - 1)
-					pixel = (int) ((image.getRGB(x, y) * matrix[4])
-							+ (image.getRGB(x - 1, y - 1) * matrix[0])
-							+ (image.getRGB(x - 1, y) * matrix[1]) + (image
-							.getRGB(x, y - 1) * matrix[3]));
-				if (x > 0 && x < width - 1 && y == 0)
-					pixel = (int) ((image.getRGB(x, y) * matrix[4])
-							+ (image.getRGB(x - 1, y) * matrix[1])
-							+ (image.getRGB(x - 1, y + 1) * matrix[2])
-							+ (image.getRGB(x, y + 1) * matrix[5])
-							+ (image.getRGB(x + 1, y) * matrix[7]) + (image
-							.getRGB(x + 1, y + 1) * matrix[8]));
-				if (x > 0 && x < width - 1 && y == height - 1)
-					pixel = (int) ((image.getRGB(x, y) * matrix[4])
-							+ (image.getRGB(x - 1, y - 1) * matrix[0])
-							+ (image.getRGB(x - 1, y) * matrix[1])
-							+ (image.getRGB(x, y - 1) * matrix[3])
-							+ (image.getRGB(x + 1, y - 1) * matrix[6]) + (image
-							.getRGB(x + 1, y) * matrix[7]));
-				if (x == 0 && y > 0 && y < height - 1)
-					pixel = (int) ((image.getRGB(x, y) * matrix[4])
-							+ (image.getRGB(x, y - 1) * matrix[3])
-							+ (image.getRGB(x, y + 1) * matrix[5])
-							+ (image.getRGB(x + 1, y - 1) * matrix[6])
-							+ (image.getRGB(x + 1, y) * matrix[7]) + (image
-							.getRGB(x + 1, y + 1) * matrix[8]));
-				if (x == width - 1 && y > 0 && y < height - 1)
-					pixel = (int) ((image.getRGB(x, y) * matrix[4])
-							+ (image.getRGB(x - 1, y - 1) * matrix[0])
-							+ (image.getRGB(x - 1, y) * matrix[1])
-							+ (image.getRGB(x - 1, y + 1) * matrix[2])
-							+ (image.getRGB(x, y - 1) * matrix[3]) + (image
-							.getRGB(x, y + 1) * matrix[5]));
-				output.setRGB(x, y, pixel);
-			}
-		}
-		return output;
-	}
-
-	public static BufferedImage convolveMini(BufferedImage bi, float[] matrix) {
-		BufferedImageOp op = new ConvolveOp(new Kernel(3, 3, matrix));
-		BufferedImage bi2 = new BufferedImage(bi.getWidth(), bi.getHeight(),
-				bi.getType());
-		bi2 = op.filter(bi, bi2);
-		return bi2;
-	}
-
-	public static BufferedImage filter(BufferedImage image) {
-		int pixel = 0, w = 765, b = 0;
-		BufferedImage output = new BufferedImage(image.getWidth(),
-				image.getHeight(), image.getType());
-		for (int x = 0; x < image.getWidth(); x++) {
-			for (int y = 0; y < image.getHeight(); y++) {
-				if (x > 1 && y > 1 && x < image.getWidth() - 1
-						&& y < image.getHeight() - 1) {
-					/*
-					 * identifying square | nw | n | ne | | w | o | e | | sw | s
-					 * | se |
-					 *//*
-						 * int o = Qcm.getPixel(image, x, y); int n =
-						 * Qcm.getPixel(image, x, y-1); int e =
-						 * Qcm.getPixel(image, x+1, y); int west =
-						 * Qcm.getPixel(image, x-1, y); int nw =
-						 * Qcm.getPixel(image, x-1, y-1); int ne =
-						 * Qcm.getPixel(image, x+1, y-1); int sw =
-						 * Qcm.getPixel(image, x-1, y+1); int se =
-						 * Qcm.getPixel(image, x+1, y+1);
-						 */
-					pixel = Qcm.getPixel(image, x, y);
-					// checking inside and outside of the square
-					if (pixel == b) {
-						// borders
-						if ((Qcm.getPixel(image, x, y - 1) == b
-								&& Qcm.getPixel(image, x, y + 1) == b && ((Qcm
-								.getPixel(image, x + 1, y - 1) == w && Qcm
-								.getPixel(image, x + 1, y + 1) == w) || (Qcm
-								.getPixel(image, x - 1, y - 1) == w && Qcm
-								.getPixel(image, x - 1, y + 1) == w)))
-								|| (Qcm.getPixel(image, x - 1, y) == b
-										&& Qcm.getPixel(image, x + 1, y) == b && ((Qcm
-										.getPixel(image, x - 1, y - 1) == w && Qcm
-										.getPixel(image, x + 1, y - 1) == w) || (Qcm
-										.getPixel(image, x + 1, y + 1) == w && Qcm
-										.getPixel(image, x + 1, y + 1) == w)))) {
-							output.setRGB(x, y, Qcm.mixColor(b, b, b));
-						} else
-							output.setRGB(x, y, Qcm.mixColor(w, w, w));
-					} else
-						output.setRGB(x, y, Qcm.mixColor(w, w, w));
-				} else
-					output.setRGB(x, y, Qcm.mixColor(w, w, w));
-			}
-		}
-		return output;
-	}
-
-	public static BufferedImage filter1(BufferedImage image) {
-
-		int w = 765, b = 0;
-		boolean condition1 = false, condition2 = false, condition3 = false, condition31 = false, condition32 = false;
-		boolean condition33 = false, condition34 = false;
-		int distance = 0;
-		BufferedImage output = new BufferedImage(image.getWidth(),
-				image.getHeight(), image.getType());
-		for (int x = 0; x < image.getWidth(); x++) {
-			for (int y = 0; y < image.getHeight(); y++) {
-				if (x > 1 && y > 1 && x < image.getWidth() - 1
-						&& y < image.getHeight() - 1) {
-					if (Qcm.getPixel(image, x, y) == b) {
-
-						condition1 = Qcm.getPixel(image, x, y - 1) == b
-								&& Qcm.getPixel(image, x, y + 1) == b
-								&& ((Qcm.getPixel(image, x + 1, y - 1) == w && Qcm
-										.getPixel(image, x + 1, y + 1) == w) || (Qcm
-										.getPixel(image, x - 1, y - 1) == w && Qcm
-										.getPixel(image, x - 1, y + 1) == w));
-						condition2 = Qcm.getPixel(image, x - 1, y) == b
-								&& Qcm.getPixel(image, x + 1, y) == b
-								&& ((Qcm.getPixel(image, x - 1, y - 1) == w && Qcm
-										.getPixel(image, x + 1, y - 1) == w) || (Qcm
-										.getPixel(image, x + 1, y + 1) == w && Qcm
-										.getPixel(image, x + 1, y + 1) == w));
-
-						condition3 = (Qcm.getPixel(image, x + 1, y) == b && Qcm
-								.getPixel(image, x, y + 1) == b)
-								|| (Qcm.getPixel(image, x, y - 1) == b && Qcm
-										.getPixel(image, x - 1, y) == b)
-								|| (Qcm.getPixel(image, x, y - 1) == b && Qcm
-										.getPixel(image, x + 1, y) == b)
-								|| (Qcm.getPixel(image, x, y + 1) == b && Qcm
-										.getPixel(image, x - 1, y) == b);
-
-						condition31 = ((Qcm.getPixel(image, x + 1, y) == b && Qcm
-								.getPixel(image, x, y + 1) == b) && (Qcm
-								.getPixel(image, x + 1, y + 1) == w || Qcm
-								.getPixel(image, x - 1, y - 1) == w));
-
-						condition32 = ((Qcm.getPixel(image, x, y + 1) == b && Qcm
-								.getPixel(image, x - 1, y) == b) && (Qcm
-								.getPixel(image, x - 1, y + 1) == w));
-
-						condition33 = ((Qcm.getPixel(image, x, y - 1) == b && Qcm
-								.getPixel(image, x - 1, y) == b) && (Qcm
-								.getPixel(image, x - 1, y - 1) == w));
-
-						condition34 = ((Qcm.getPixel(image, x, y - 1) == b && Qcm
-								.getPixel(image, x + 1, y) == b) && (Qcm
-								.getPixel(image, x + 1, y - 1) == w));
-
-						if (condition1 || condition2) {
-							// Qcm.point(x, y);
-						} else
-							output.setRGB(x, y, Qcm.mixColor(w, w, w));
-					} else
-						output.setRGB(x, y, Qcm.mixColor(w, w, w));
-				} else
-					output.setRGB(x, y, Qcm.mixColor(w, w, w));
+				output.setRGB(x, y,  mixColor(0, 0, 0));
 			}
 		}
 		return output;
@@ -460,8 +258,8 @@ public class Qcm extends JPanel {
 	public static void point(int x, int y) {
 		System.out.println("point: " + x + " " + y);
 	}
-	
-	public static BufferedImage colorFilter(BufferedImage image){
+
+	public static BufferedImage colorFilter(BufferedImage image, int seuil){
 		BufferedImage output = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
 		for(int x=0; x<image.getWidth(); x++){
 			for(int y=0; y<image.getHeight(); y++){	
@@ -469,57 +267,26 @@ public class Qcm extends JPanel {
 				output.setRGB(x, y, (image.getRGB(x, y) & 0xff00ff00)
                         | ((image.getRGB(x, y) & 0xff0000) >> 16)
                         | ((image.getRGB(x, y) & 0xff) << 16)); */
-				if(Qcm.getPixel(image, x, y) > 100){
-					output.setRGB(x, y, Qcm.mixColor(255, 255, 255));
+				if( getPixel(image, x, y) > seuil){
+					output.setRGB(x, y,  mixColor(255, 255, 255));
 				}
 				else output.setRGB(x, y, image.getRGB(x, y));
 			}
 		}
 		return output;
 	}
-	
-	public static BufferedImage filtreMedian(BufferedImage image) {
-		int newPixel = 0;
-		int pixels[] = new int[9];
-		BufferedImage output = new BufferedImage(image.getWidth(),
-				image.getHeight(), image.getType());
-		for (int i = 0; i < pixels.length; i++) {
-			pixels[i] = 0;
-		}
-		for (int x = 1; x < image.getWidth() - 1; x++) {
-			for (int y = 1; y < image.getHeight() - 1; y++) {
-				pixels[0] = Qcm.getPixel(image, x, y);
-				pixels[1] = Qcm.getPixel(image, x - 1, y - 1);
-				pixels[2] = Qcm.getPixel(image, x - 1, y);
-				pixels[3] = Qcm.getPixel(image, x - 1, y + 1);
-				pixels[4] = Qcm.getPixel(image, x, y - 1);
-				pixels[5] = Qcm.getPixel(image, x, y + 1);
-				pixels[6] = Qcm.getPixel(image, x + 1, y - 1);
-				pixels[7] = Qcm.getPixel(image, x + 1, y);
-				pixels[8] = Qcm.getPixel(image, x + 1, y + 1);
-				Arrays.sort(pixels);
-				newPixel = pixels[4];
-				output.setRGB(x, y, Qcm.mixColor(newPixel, newPixel, newPixel));
-			}
-		}
-
-		return output;
-	}
 
 	public static BufferedImage extractObject(BufferedImage image, int diff) {
-
-		BufferedImage output = new BufferedImage(image.getWidth(),
-				image.getHeight(), image.getType());
+		BufferedImage output = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
 		int pixels[] = new int[image.getWidth()];
-
 		for (int i = 0; i < pixels.length; i++) {
 			pixels[i] = 0;
 		}
 		for (int x = 0; x < image.getWidth(); x++) {
 			for (int y = 0; y < image.getHeight(); y++) {
-				output.setRGB(x, y, Qcm.mixColor(255, 255, 255));
+				output.setRGB(x, y,  mixColor(255, 255, 255));
 				// we count our black pixels in a binary image
-				if (Qcm.getPixel(image, x, y) < 100)
+				if ( getPixel(image, x, y) < 100)
 					pixels[x]++;
 			}
 		}
@@ -548,17 +315,10 @@ public class Qcm extends JPanel {
 				output.setRGB(x, y, image.getRGB(x, y));
 			}
 		}
-		/*
-		 * Graphics2D graphic = output.createGraphics(); graphic.setColor(new
-		 * Color(0)); graphic.drawLine(indexStart, 0, indexStart,
-		 * image.getHeight()); graphic.drawLine(indexEnd, 0, indexEnd,
-		 * image.getHeight());
-		 */
 		return output;
 	}
 
-	public static BufferedImage extractObjectHoriz(BufferedImage image,
-			int minDiff, int maxDiff) {
+	public static BufferedImage extractObjectHoriz(BufferedImage image, int minDiff, int maxDiff) {
 
 		int[] pixels = new int[image.getHeight()];
 		BufferedImage output = new BufferedImage(image.getWidth(),
@@ -569,8 +329,8 @@ public class Qcm extends JPanel {
 		}
 		for (int x = 0; x < image.getWidth(); x++) {
 			for (int y = 0; y < image.getHeight(); y++) {
-				output.setRGB(x, y, Qcm.mixColor(255, 255, 255));
-				if (Qcm.getPixel(image, x, y) == 0)
+				output.setRGB(x, y,  mixColor(255, 255, 255));
+				if ( getPixel(image, x, y) == 0)
 					pixels[y]++;
 			}
 		}
@@ -603,35 +363,73 @@ public class Qcm extends JPanel {
 		int pixel = 0;
 		for (int x = 0; x < image.getWidth(); x++) {
 			for (int y = indexStart; y < indexEnd + 1; y++) {
-				pixel = Qcm.getPixel(image, x, y);
-				output.setRGB(x, y, Qcm.mixColor(pixel, pixel, pixel));
+				pixel =  getPixel(image, x, y);
+				output.setRGB(x, y,  mixColor(pixel, pixel, pixel));
 			}
 		}
-
-		// square height
-		// int sh = 8;
-		// space between each square approx
-		// int sbes = 10;
-		/*
-		 * Graphics2D graphic = output.createGraphics(); graphic.setColor(new
-		 * Color(0));
-		 * 
-		 * graphic.drawLine(5, indexStart, 13, indexStart); graphic.drawLine(5,
-		 * indexStart+8, 13, indexStart+8);
-		 * 
-		 * graphic.drawLine(5, indexStart+18, 13, indexStart+18);
-		 * graphic.drawLine(5, indexStart+26, 13, indexStart+26);
-		 * 
-		 * graphic.drawLine(5, indexStart+37, 13, indexStart+37);
-		 * graphic.drawLine(5, indexStart+45, 13, indexStart+45);
-		 * 
-		 * graphic.drawLine(5, indexStart+56, 13, indexStart+56);
-		 * graphic.drawLine(5, indexStart+64, 13, indexStart+64);
-		 * 
-		 * graphic.drawLine(5, indexStart+74, 13, indexStart+74);
-		 * graphic.drawLine(5, indexStart+82, 13, indexStart+82);
-		 */
 		return output;
+	}
+
+	public static BufferedImage fourConnectivity(BufferedImage image){
+		BufferedImage output = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
+		int region[][] = new int[image.getWidth()][image.getHeight()];
+		int pixel = 0;
+		int cpt = 0;
+		int label = 0;
+		String s = "";
+		Font font = new Font("Lucida Grande", 0, 8);
+		Graphics2D g = output.createGraphics();
+		g.setColor(Color.red);
+		g.setFont(font);
+		for(int x=0; x<image.getWidth(); x++){
+			for(int y=0; y<image.getHeight(); y++){
+				region[x][y] = 0;
+				output.setRGB(x, y, mixColor(255, 255, 255));
+			}
+		}
+		for(int x=1; x<image.getWidth()-1; x++){
+			for(int y=1; y<image.getHeight()-1; y++){
+				if(getPixel(image, x, y) != 0){
+					pixel = getPixel(image, x, y);
+					label = region[x][y];
+					if(pixel == getPixel(image, x-1, y) && label == region[x-1][y] ){
+						System.out.println("we are in the same region");
+						region[x][y] = region[x-1][y];
+					} 
+					else if((pixel == getPixel(image, x-1, y) && pixel == getPixel(image, x, y-1)) 
+							&& (label == region[x-1][y] && label == region[x][y-1]) ){
+						System.out.println("North and West pixels belong to the same region and must be merged");
+						region[x][y] = Math.min(region[x-1][y], region[x][y-1]);
+					}
+					else if((pixel != getPixel(image, x-1, y) && pixel == getPixel(image, x, y-1)) 
+							&& (label != region[x-1][y] && label == region[x][y-1]) ){
+						System.out.println("Assign the label of the North pixel to the current pixel");
+						region[x][y] = region[x][y-1];
+					}
+					else if((pixel != getPixel(image, x-1, y) && pixel != getPixel(image, x, y-1))
+							&& (label != region[x-1][y] && label != region[x][y-1])){
+						System.out.println("Create a new label id and assign it to the current pixel");
+						cpt++;
+						region[x][y] = cpt;
+					}
+					System.out.println("region["+x+"]["+y+"]=" + region[x][y]);
+					s = new Integer(region[x][y]).toString();
+					g.drawString(s, x, y);
+				}
+
+			}
+		}
+		return output;
+	}
+
+	public static BufferedImage zoom(BufferedImage image, int zoomLevel){
+		int newImageWidth = image.getWidth() * zoomLevel;
+		int newImageHeight = image.getHeight() * zoomLevel;
+		BufferedImage resizedImage = new BufferedImage(newImageWidth , newImageHeight, image.getType());
+		Graphics2D g = resizedImage.createGraphics();
+		g.drawImage(image, 0, 0, newImageWidth , newImageHeight , null);
+		g.dispose();
+		return resizedImage;
 	}
 
 }
