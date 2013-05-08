@@ -1,25 +1,17 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.BufferedImageOp;
-import java.awt.image.ConvolveOp;
-import java.awt.image.Kernel;
 import java.io.File;
 import java.io.IOException;
-import java.io.ObjectStreamClass;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Random;
-
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
 
 public class Qcm extends JPanel {
 
@@ -33,7 +25,6 @@ public class Qcm extends JPanel {
 		}
 
 		BufferedImage bi3 = null;
-		BufferedImage bi2 = null;
 
 		bi3 = colorFilter(bi, 450);
 		bi3 = grayImage(bi3);
@@ -161,7 +152,7 @@ public class Qcm extends JPanel {
 		}
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
-				// initialze output to white color
+				// Initialize output to white color
 				output.setRGB(i, j,  mixColor(255, 255, 255));
 			}
 		}
@@ -238,10 +229,6 @@ public class Qcm extends JPanel {
 		return output;
 	}
 
-	public static void point(int x, int y) {
-		System.out.println("point: " + x + " " + y);
-	}
-
 	public static BufferedImage colorFilter(BufferedImage image, int seuil){
 		BufferedImage output = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
 		for(int x=0; x<image.getWidth(); x++){
@@ -254,100 +241,6 @@ public class Qcm extends JPanel {
 					output.setRGB(x, y,  mixColor(255, 255, 255));
 				}
 				else output.setRGB(x, y, image.getRGB(x, y));
-			}
-		}
-		return output;
-	}
-
-	public static BufferedImage extractObject(BufferedImage image, int diff) {
-		BufferedImage output = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
-		int pixels[] = new int[image.getWidth()];
-		for (int i = 0; i < pixels.length; i++) {
-			pixels[i] = 0;
-		}
-		for (int x = 0; x < image.getWidth(); x++) {
-			for (int y = 0; y < image.getHeight(); y++) {
-				output.setRGB(x, y,  mixColor(255, 255, 255));
-				// we count our black pixels in a binary image
-				if ( getPixel(image, x, y) < 100)
-					pixels[x]++;
-			}
-		}
-		int max = pixels[0];
-		int indexStart = 0;
-		for (int i = 0; i < pixels.length; i++) {
-			if (pixels[i] > max) {
-				max = pixels[i];
-				indexStart = i;
-			}
-		}
-		System.out.println("peak: " + max + " index: " + indexStart
-				+ " image width: " + image.getWidth());
-		int indexEnd = 0;
-		for (int i = 0; i < pixels.length; i++) {
-			if (max - pixels[i] < diff) {
-				indexEnd = i;
-				// System.out.print("max: " + pixels[i] + " index: " + i +
-				// " | ");
-			}
-		}
-		System.out.println("Found object in x[" + indexStart + ", "
-				+ (indexEnd + 1) + "]");
-		for (int x = indexStart; x < indexEnd + 1; x++) {
-			for (int y = 0; y < image.getHeight(); y++) {
-				output.setRGB(x, y, image.getRGB(x, y));
-			}
-		}
-		return output;
-	}
-
-	public static BufferedImage extractObjectHoriz(BufferedImage image, int minDiff, int maxDiff) {
-
-		int[] pixels = new int[image.getHeight()];
-		BufferedImage output = new BufferedImage(image.getWidth(),
-				image.getHeight(), image.getType());
-
-		for (int i = 0; i < pixels.length; i++) {
-			pixels[i] = 0;
-		}
-		for (int x = 0; x < image.getWidth(); x++) {
-			for (int y = 0; y < image.getHeight(); y++) {
-				output.setRGB(x, y,  mixColor(255, 255, 255));
-				if ( getPixel(image, x, y) == 0)
-					pixels[y]++;
-			}
-		}
-
-		int max = pixels[0];
-		for (int i = 0; i < pixels.length; i++) {
-			if (pixels[i] > max) {
-				max = pixels[i];
-			}
-		}
-		int indexStart = 0;
-		for (int i = 0; i < pixels.length; i++) {
-			if (max - pixels[i] < minDiff) {
-				indexStart = i;
-				break;
-			}
-		}
-		System.out.println("peak: " + max + ", on index: " + indexStart
-				+ ", image height: " + image.getHeight());
-		int indexEnd = 0;
-		for (int i = 0; i < pixels.length; i++) {
-			if (max - pixels[i] < maxDiff) {
-				indexEnd = i;
-				// System.out.print("peak: " + pixels[i] + " index: " + i +
-				// " | ");
-			}
-		}
-		System.out.println("Found object in y[" + indexStart + ", "
-				+ (indexEnd + 1) + "]");
-		int pixel = 0;
-		for (int x = 0; x < image.getWidth(); x++) {
-			for (int y = indexStart; y < indexEnd + 1; y++) {
-				pixel =  getPixel(image, x, y);
-				output.setRGB(x, y,  mixColor(pixel, pixel, pixel));
 			}
 		}
 		return output;
@@ -410,12 +303,11 @@ public class Qcm extends JPanel {
 		int[] pixelsY = new int[image.getHeight()];
 		int[] pixelsX = new int[image.getWidth()];
 		int[] startEndIndex ={-1,1};
-		ArrayList<int[]> yCoords = new ArrayList<int[]>();
 		ArrayList<Integer> listY = new ArrayList<Integer>();
 		ArrayList<Integer> listX = new ArrayList<Integer>();
 		for (int x = 0; x < image.getWidth(); x++) {
 			for (int y = 0; y < image.getHeight(); y++) {
-				// initialze output to white color
+				// Initialize output to white color
 				output.setRGB(x, y,  mixColor(255, 255, 255));
 				// we count our black pixels in a binary image
 				if ( getPixel(image, x, y) != 0){
@@ -465,13 +357,15 @@ public class Qcm extends JPanel {
 						Iterator<Integer> it3 = listX.iterator();
 						while(it3.hasNext()){
 							if(x == it3.next()){
-									if(x ==listX.get(0) || x == listX.get(1)) System.out.println("question " + k/2 + " case A coché!");
-									else if(x == listX.get(2) || x == listX.get(3)) System.out.println("question " + k/2 + " case B coché!");
-									else if(x == listX.get(4) || x == listX.get(5)) System.out.println("question " + k/2 + " case C coché!");
-									else if(x == listX.get(6) || x == listX.get(7)) System.out.println("question " + k/2 + " case D coché!");
+									if(x ==listX.get(0) || x == listX.get(1)) System.out.println("question " + (k/2+1) + " case A coché!");
+									else if(x == listX.get(2) || x == listX.get(3)) System.out.println("question " + (k/2+1) + " case B coché!");
+									else if(x == listX.get(4) || x == listX.get(5)) System.out.println("question " + (k/2+1) + " case C coché!");
+									else if(x == listX.get(6) || x == listX.get(7)) System.out.println("question " + (k/2+1) + " case D coché!");
+									else if(x == listX.get(8) || x == listX.get(9)) System.out.println("question " + (k/2+1) + " case E coché!");
 									else System.out.println("je sais pas enncore!");
 							}
 						}
+						output.setRGB(x, y, mixColor(0, 0, 0));
 					}
 				}
 			}
