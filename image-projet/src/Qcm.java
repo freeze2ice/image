@@ -9,6 +9,8 @@ import java.awt.image.Kernel;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Random;
+
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -375,6 +377,7 @@ public class Qcm extends JPanel {
 		int region[][] = new int[image.getWidth()][image.getHeight()];
 		int pixel = 0;
 		int cpt = 0;
+		Color color;
 		int label = 0;
 		String s = "";
 		Font font = new Font("Lucida Grande", 0, 8);
@@ -389,32 +392,29 @@ public class Qcm extends JPanel {
 		}
 		for(int x=1; x<image.getWidth()-1; x++){
 			for(int y=1; y<image.getHeight()-1; y++){
+				color = new Color(new Random().nextInt(600));
 				if(getPixel(image, x, y) != 0){
-					pixel = getPixel(image, x, y);
-					label = region[x][y];
-					if(pixel == getPixel(image, x-1, y) && label == region[x-1][y] ){
-						System.out.println("we are in the same region");
-						region[x][y] = region[x-1][y];
-					} 
-					else if((pixel == getPixel(image, x-1, y) && pixel == getPixel(image, x, y-1)) 
-							&& (label == region[x-1][y] && label == region[x][y-1]) ){
-						System.out.println("North and West pixels belong to the same region and must be merged");
-						region[x][y] = Math.min(region[x-1][y], region[x][y-1]);
-					}
-					else if((pixel != getPixel(image, x-1, y) && pixel == getPixel(image, x, y-1)) 
-							&& (label != region[x-1][y] && label == region[x][y-1]) ){
-						System.out.println("Assign the label of the North pixel to the current pixel");
-						region[x][y] = region[x][y-1];
-					}
-					else if((pixel != getPixel(image, x-1, y) && pixel != getPixel(image, x, y-1))
-							&& (label != region[x-1][y] && label != region[x][y-1])){
-						System.out.println("Create a new label id and assign it to the current pixel");
-						cpt++;
-						region[x][y] = cpt;
-					}
+					if(getPixel(image, x-1, y) !=0){
+				        if(getPixel(image, x, y-1) !=0) {
+				            System.out.println("North and West pixels belong to the same region and must be merged");
+				            region[x][y] = Math.min(region[x-1][y], region[x][y-1]);
+				        } else {
+				            System.out.println("we are in the same region");
+				            region[x][y] = region[x-1][y];
+				        }
+				    } else if(getPixel(image, x-1, y) ==0) {
+				        if(getPixel(image, x, y-1) !=0) {
+				            System.out.println("Assign the label of the North pixel to the current pixel");
+				            region[x][y] = region[x][y-1];
+				        } else if (getPixel(image, x, y-1) ==0) {
+				            System.out.println("Create a new label id and assign it to the current pixel");
+				            cpt++;
+				            region[x][y] = cpt;
+				            output.setRGB(x, y, color.getRGB());
+				        }
+				    }
 					System.out.println("region["+x+"]["+y+"]=" + region[x][y]);
-					s = new Integer(region[x][y]).toString();
-					g.drawString(s, x, y);
+					output.setRGB(x, y, color.getRGB());
 				}
 
 			}
