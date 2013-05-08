@@ -215,19 +215,15 @@ public class Qcm extends JPanel {
 
 	public static BufferedImage plotVertiHistogram(BufferedImage image) {
 		int[] pixels = new int[image.getWidth()];
-		BufferedImage output = new BufferedImage(image.getWidth(),
-				image.getHeight(), image.getType());
+		BufferedImage output = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
 		for (int i = 0; i < pixels.length; i++) {
 			pixels[i] = 0;
 		}
+
 		for (int x = 0; x < image.getWidth(); x++) {
 			for (int y = 0; y < image.getHeight(); y++) {
 				// initialze output to white color
 				output.setRGB(x, y,  mixColor(255, 255, 255));
-			}
-		}
-		for (int x = 0; x < image.getWidth(); x++) {
-			for (int y = 0; y < image.getHeight(); y++) {
 				// we count our black pixels in a binary image
 				if ( getPixel(image, x, y) == 0)
 					pixels[x]++;
@@ -235,8 +231,7 @@ public class Qcm extends JPanel {
 		}
 		// we draw the counted black pixels
 		for (int x = 0; x < image.getWidth(); x++) {
-			for (int y = image.getHeight() - 1; y > image.getHeight()
-					- pixels[x]; y--) {
+			for (int y = image.getHeight() - 1; y > image.getHeight()- pixels[x]; y--) {
 				output.setRGB(x, y,  mixColor(0, 0, 0));
 			}
 		}
@@ -412,39 +407,76 @@ public class Qcm extends JPanel {
 
 	public static BufferedImage detectObject(BufferedImage image){
 		BufferedImage output = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
-		int[] pixels = new int[image.getHeight()];
+		int[] pixelsY = new int[image.getHeight()];
+		int[] pixelsX = new int[image.getWidth()];
 		int[] startEndIndex ={-1,1};
 		ArrayList<int[]> yCoords = new ArrayList<int[]>();
-		ArrayList<Integer> list = new ArrayList<Integer>();
+		ArrayList<Integer> listY = new ArrayList<Integer>();
+		ArrayList<Integer> listX = new ArrayList<Integer>();
 		for (int x = 0; x < image.getWidth(); x++) {
 			for (int y = 0; y < image.getHeight(); y++) {
 				// initialze output to white color
 				output.setRGB(x, y,  mixColor(255, 255, 255));
 				// we count our black pixels in a binary image
-				if ( getPixel(image, x, y) != 0)
-					pixels[y]++;
+				if ( getPixel(image, x, y) != 0){
+					pixelsY[y]++;
+					pixelsX[x]++;
+				}	
 			}
 		}
-		
-		for(int i =0; i<pixels.length; i++){
-		        //System.out.println(pixels[i]);
-		        if(pixels[i] != 0 && startEndIndex[0] == -1) {
-		            startEndIndex[0] = i;
-		            list.add(i);
-		            System.out.println("start= " + startEndIndex[0] );
-		        } else if(pixels[i] == 0 && startEndIndex[0] != -1){
-		            startEndIndex[1] = i-1;
-		            list.add(i-1);
-		            startEndIndex[0] = -1;
-		            System.out.println("end= " + startEndIndex[1]);
-		        }
-		    }
 
-		Iterator<Integer> it = list.iterator();
+		for(int i =0; i<pixelsY.length; i++){
+			if(pixelsY[i] != 0 && startEndIndex[0] == -1) {
+				startEndIndex[0] = i;
+				listY.add(i);
+			} else if(pixelsY[i] == 0 && startEndIndex[0] != -1){
+				startEndIndex[1] = i-1;
+				listY.add(i-1);
+				startEndIndex[0] = -1;
+			}
+		}
+		startEndIndex[0] =-1;
+		for(int i=0; i<pixelsX.length; i++){
+			if(pixelsX[i] != 0 && startEndIndex[0] == -1) {
+				startEndIndex[0] = i;
+				listX.add(i);
+			} else if(pixelsX[i] == 0 && startEndIndex[0] != -1){
+				startEndIndex[1] = i-1;
+				listX.add(i-1);
+				startEndIndex[0] = -1;
+			}
+		}
+		System.out.println("Y axis:");
+		Iterator<Integer> it = listY.iterator();
 		while(it.hasNext()){
 			System.out.println(it.next());
 		}
-		
+		System.out.println("--------------------------");
+		System.out.println("X axis:");
+		Iterator<Integer> it2 = listX.iterator();
+		while(it2.hasNext()){
+			System.out.println(it2.next());
+		}
+		System.out.println("-----------------------");
+		for(int k=0; k<listY.size(); k=k+2){
+			for(int x=0; x<image.getWidth(); x++){
+				for(int y=listY.get(k); y<listY.get(k+1); y++){
+					if(getPixel(image, x, y) != 0){
+						Iterator<Integer> it3 = listX.iterator();
+						while(it3.hasNext()){
+							if(x == it3.next()){
+									if(x ==listX.get(0) || x == listX.get(1)) System.out.println("question " + k/2 + " case A coché!");
+									else if(x == listX.get(2) || x == listX.get(3)) System.out.println("question " + k/2 + " case B coché!");
+									else if(x == listX.get(4) || x == listX.get(5)) System.out.println("question " + k/2 + " case C coché!");
+									else if(x == listX.get(6) || x == listX.get(7)) System.out.println("question " + k/2 + " case D coché!");
+									else System.out.println("je sais pas enncore!");
+							}
+						}
+					}
+				}
+			}
+		}
+
 		return output;
 	}
 
