@@ -8,7 +8,10 @@ import java.awt.image.ConvolveOp;
 import java.awt.image.Kernel;
 import java.io.File;
 import java.io.IOException;
+import java.io.ObjectStreamClass;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
@@ -21,30 +24,22 @@ import javax.swing.JScrollPane;
 public class Qcm extends JPanel {
 
 	public Qcm(File image) {
-		// TODO Auto-generated constructor stub
 		super(new BorderLayout());
-		// File file = new File("qcms/qcmImage.jpg");
 		BufferedImage bi = null;
 		try {
 			bi = ImageIO.read(image);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		BufferedImage bi3;
-		BufferedImage bi2;
-		//bi2 = grayImage(bi);
-		//bi2 = binarizeImage(bi2, 240);
-		// bi3= plotHistogram(bi2);
+		BufferedImage bi3 = null;
+		BufferedImage bi2 = null;
 
 		bi3 = colorFilter(bi, 450);
 		bi3 = grayImage(bi3);
 		bi3 = binarizeImage(bi3, 250);
-
 		bi3 = ouverture(bi3);
-
-		bi3 = fourConnectivity(bi3);
+		bi3 = detectObject(bi3);
 
 		ImageIcon icon = new ImageIcon(bi);
 		JLabel label = new JLabel();
@@ -66,10 +61,6 @@ public class Qcm extends JPanel {
 		blue = color.getBlue();
 		pixel = red + green + blue;
 		return pixel;
-	}
-
-	public static void logConsole(Object obj) {
-		System.out.println(obj);
 	}
 
 	private static int mixColor(int red, int green, int blue) {
@@ -201,11 +192,6 @@ public class Qcm extends JPanel {
 		BufferedImage output = new BufferedImage(width, height, image.getType());
 		for (int i = 0; i < pixels.length; i++) {
 			pixels[i] = 0;
-		}
-		for (int i = 0; i < width; i++) {
-			for (int j = 0; j < height; j++) {
-
-			}
 		}
 		for (int x = 0; x < image.getWidth(); x++) {
 			for (int y = 0; y < image.getHeight(); y++) {
@@ -375,15 +361,8 @@ public class Qcm extends JPanel {
 	public static BufferedImage fourConnectivity(BufferedImage image){
 		BufferedImage output = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
 		int region[][] = new int[image.getWidth()][image.getHeight()];
-		int pixel = 0;
 		int cpt = 0;
 		Color color;
-		int label = 0;
-		String s = "";
-		Font font = new Font("Lucida Grande", 0, 8);
-		Graphics2D g = output.createGraphics();
-		g.setColor(Color.red);
-		g.setFont(font);
 		for(int x=0; x<image.getWidth(); x++){
 			for(int y=0; y<image.getHeight(); y++){
 				region[x][y] = 0;
@@ -395,28 +374,27 @@ public class Qcm extends JPanel {
 				color = new Color(new Random().nextInt(600));
 				if(getPixel(image, x, y) != 0){
 					if(getPixel(image, x-1, y) !=0){
-				        if(getPixel(image, x, y-1) !=0) {
-				            System.out.println("North and West pixels belong to the same region and must be merged");
-				            region[x][y] = Math.min(region[x-1][y], region[x][y-1]);
-				        } else {
-				            System.out.println("we are in the same region");
-				            region[x][y] = region[x-1][y];
-				        }
-				    } else if(getPixel(image, x-1, y) ==0) {
-				        if(getPixel(image, x, y-1) !=0) {
-				            System.out.println("Assign the label of the North pixel to the current pixel");
-				            region[x][y] = region[x][y-1];
-				        } else if (getPixel(image, x, y-1) ==0) {
-				            System.out.println("Create a new label id and assign it to the current pixel");
-				            cpt++;
-				            region[x][y] = cpt;
-				            output.setRGB(x, y, color.getRGB());
-				        }
-				    }
+						if(getPixel(image, x, y-1) !=0) {
+							System.out.println("North and West pixels belong to the same region and must be merged");
+							region[x][y] = Math.min(region[x-1][y], region[x][y-1]);
+						} else {
+							System.out.println("we are in the same region");
+							region[x][y] = region[x-1][y];
+						}
+					} else if(getPixel(image, x-1, y) ==0) {
+						if(getPixel(image, x, y-1) !=0) {
+							System.out.println("Assign the label of the North pixel to the current pixel");
+							region[x][y] = region[x][y-1];
+						} else if (getPixel(image, x, y-1) ==0) {
+							System.out.println("Create a new label id and assign it to the current pixel");
+							cpt++;
+							region[x][y] = cpt;
+							output.setRGB(x, y, color.getRGB());
+						}
+					}
 					System.out.println("region["+x+"]["+y+"]=" + region[x][y]);
 					output.setRGB(x, y, color.getRGB());
 				}
-
 			}
 		}
 		return output;
@@ -430,6 +408,44 @@ public class Qcm extends JPanel {
 		g.drawImage(image, 0, 0, newImageWidth , newImageHeight , null);
 		g.dispose();
 		return resizedImage;
+	}
+
+	public static BufferedImage detectObject(BufferedImage image){
+		BufferedImage output = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
+		int[] pixels = new int[image.getHeight()];
+		int[] startEndIndex ={-1,1};
+		ArrayList<int[]> yCoords = new ArrayList<int[]>();
+		ArrayList<Integer> list = new ArrayList<Integer>();
+		for (int x = 0; x < image.getWidth(); x++) {
+			for (int y = 0; y < image.getHeight(); y++) {
+				// initialze output to white color
+				output.setRGB(x, y,  mixColor(255, 255, 255));
+				// we count our black pixels in a binary image
+				if ( getPixel(image, x, y) != 0)
+					pixels[y]++;
+			}
+		}
+		
+		for(int i =0; i<pixels.length; i++){
+		        //System.out.println(pixels[i]);
+		        if(pixels[i] != 0 && startEndIndex[0] == -1) {
+		            startEndIndex[0] = i;
+		            list.add(i);
+		            System.out.println("start= " + startEndIndex[0] );
+		        } else if(pixels[i] == 0 && startEndIndex[0] != -1){
+		            startEndIndex[1] = i-1;
+		            list.add(i-1);
+		            startEndIndex[0] = -1;
+		            System.out.println("end= " + startEndIndex[1]);
+		        }
+		    }
+
+		Iterator<Integer> it = list.iterator();
+		while(it.hasNext()){
+			System.out.println(it.next());
+		}
+		
+		return output;
 	}
 
 }
