@@ -11,14 +11,14 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class Qcm extends JPanel {
-	
+public class Qcm2 extends JPanel {
+
 	private File image;
 	private ArrayList<String> answers;
 	
-	public Qcm(File image) {
+	public Qcm2(File image) {
 		super(new BorderLayout());
-		this.image=image;
+		this.image = image;
 		BufferedImage bi = null;
 		try {
 			bi = ImageIO.read(image);
@@ -332,7 +332,7 @@ public class Qcm extends JPanel {
 		listX = getListX(getPixelsX(image));
 		listY = getListY(getPixelsY(image));
 		answers = findAnswers(image, listX, listY);
-		System.out.println("------- "+ getImageName() + " ----------");
+		System.out.println("-------- "+ getImageName() + " ---------");
 		for(int i=0; i<answers.size(); i++){
 			System.out.println(i + ". " +answers.get(i));
 		}
@@ -395,7 +395,7 @@ public class Qcm extends JPanel {
 		}
 		return answers;
 	}
-
+	
 	public String getImageName(){
 		return image.getName();
 	}
@@ -407,5 +407,5 @@ public class Qcm extends JPanel {
 	public void setAnswers(ArrayList<String> answers) {
 		this.answers = answers;
 	}
-		
+
 }
