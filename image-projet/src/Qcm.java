@@ -354,38 +354,55 @@ public class Qcm extends JPanel {
 		while(it2.hasNext()){
 			System.out.println(it2.next());
 		}
-		int dup=0, dup2=0, dup3=0, dup4=0, dup5=0;
 		System.out.println("-----------------------");
+		int i=1;
+		boolean dup;
 		for(int k=0; k<listY.size(); k=k+2){
-			//System.out.println("------------k: " + k);
+			System.out.println("----------------k: " + k);
+			int cpt=0;
+			dup= false;
+			System.out.println("cpt= " + cpt);
 			for(int l=0; l<listX.size(); l=l+2){
+				System.out.println("----------l: " + l);
 				for(int x=listX.get(l); x<listX.get(l+1); x++){
 					//System.out.println("-----x: " + x);
 					for(int y=listY.get(k); y<listY.get(k+1); y++){
 						//System.out.println("y: " + y);
 						if(getPixel(image, x, y) != 0){
-							//System.out.println("in if");
-							Iterator<Integer> it3 = listX.iterator();
-							while(it3.hasNext()){
-								if(x == it3.next()){
-									if((x ==listX.get(0) || x == listX.get(1)) && dup == 0){ 
-										System.out.println("question " + (k/2+1) + " case A coché!");	
-										dup=1;
+							cpt++;
+							//System.out.println("in if cpt= " +  cpt);
+							//System.out.println("----------" + listY.get(k+1) +" " + listX.get(l+1) );
+							if(x==listX.get(l+1)-1){
+									if((x ==listX.get(0) || x == listX.get(1)-1) && !dup){ 
+										System.out.println("question " + (k+i) + " case A coché!");
+										i--;
+										dup = true;
 									}
-									else if((x == listX.get(2) || x == listX.get(3)) && dup2 ==0){
-										System.out.println("question " + (k/2+1) + " case B coché!");
+									else if((x == listX.get(2) || x == listX.get(3)-1) && !dup){
+										System.out.println("question " + (k+i) + " case B coché!");
+										i--;
+										dup = true;
 									}
-									else if((x == listX.get(4) || x == listX.get(5)) && dup3 ==0){
-										System.out.println("question " + (k/2+1) + " case C coché!");
+									else if((x == listX.get(4) || x == listX.get(5)-1) && !dup){
+										System.out.println("question " + (k+i) + " case C coché!");
+										i--;
+										dup = true;
 									}
-									else if((x == listX.get(6) || x == listX.get(7)) && dup4 ==0){
-										System.out.println("question " + (k/2+1) + " case D coché!");
+									else if((x == listX.get(6) || x == listX.get(7)-1) && !dup){
+										System.out.println("question " + (k+i) + " case D coché!");
+										i--;
+										dup = true;
 									}
-									else if((x == listX.get(8) || x == listX.get(9)) && dup5 ==0){
-										System.out.println("question " + (k/2+1) + " case E coché!");
+									else if((x == listX.get(8) || x == listX.get(9)-1) && !dup){
+										System.out.println("question " + (k+i) + " case E coché!");
+										i--;
+										dup = true;
 									}
-									//else System.out.println("je sais pas enncore!");
-								}
+									else if(!dup){
+										System.out.println("je sais pas enncore!");
+										System.out.println("i: " + i);
+										i--;
+									}
 							}
 							output.setRGB(x, y, mixColor(0, 0, 0));
 						}
