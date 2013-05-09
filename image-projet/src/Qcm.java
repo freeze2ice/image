@@ -25,26 +25,31 @@ public class Qcm extends JPanel {
 
 		BufferedImage bi3 = null;
 		BufferedImage bi2 = null;
+		BufferedImage bi4 = null;
 
-		bi3 = colorFilter(bi, 450);
-		bi3 = grayImage(bi3);
+		bi2 = colorFilter(bi, 450);
+		bi3 = grayImage(bi2);
 		bi3 = binarizeImage(bi3, 250);
-		bi2 = ouverture(bi3);
-		bi2 = ouverture(bi2);
-		bi3 = detectObject(bi2);
+		bi4 = ouverture(bi3);
+		bi4 = ouverture(bi4);
+		detectObject(bi4);
 
 		ImageIcon icon = new ImageIcon(bi);
 		JLabel label = new JLabel();
 		label.setIcon(icon);
-		this.add(label, BorderLayout.WEST);
+		this.add(label, BorderLayout.NORTH);
 
 		JLabel label2 = new JLabel();
-		label2.setIcon(new ImageIcon(bi3));
-		this.add(label2, BorderLayout.EAST);
+		label2.setIcon(new ImageIcon(bi2));
+		this.add(label2, BorderLayout.WEST);
 
 		JLabel label3 = new JLabel();
-		label3.setIcon(new ImageIcon(bi2));
+		label3.setIcon(new ImageIcon(bi3));
 		this.add(label3, BorderLayout.CENTER);
+
+		JLabel label4 = new JLabel();
+		label4.setIcon(new ImageIcon(bi4));
+		this.add(label4, BorderLayout.EAST);
 
 	}
 
@@ -251,48 +256,6 @@ public class Qcm extends JPanel {
 		return output;
 	}
 
-	public static BufferedImage fourConnectivity(BufferedImage image){
-		BufferedImage output = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
-		int region[][] = new int[image.getWidth()][image.getHeight()];
-		int cpt = 0;
-		Color color;
-		for(int x=0; x<image.getWidth(); x++){
-			for(int y=0; y<image.getHeight(); y++){
-				region[x][y] = 0;
-				output.setRGB(x, y, mixColor(255, 255, 255));
-			}
-		}
-		for(int x=1; x<image.getWidth()-1; x++){
-			for(int y=1; y<image.getHeight()-1; y++){
-				color = new Color(new Random().nextInt(600));
-				if(getPixel(image, x, y) != 0){
-					if(getPixel(image, x-1, y) !=0){
-						if(getPixel(image, x, y-1) !=0) {
-							System.out.println("North and West pixels belong to the same region and must be merged");
-							region[x][y] = Math.min(region[x-1][y], region[x][y-1]);
-						} else {
-							System.out.println("we are in the same region");
-							region[x][y] = region[x-1][y];
-						}
-					} else if(getPixel(image, x-1, y) ==0) {
-						if(getPixel(image, x, y-1) !=0) {
-							System.out.println("Assign the label of the North pixel to the current pixel");
-							region[x][y] = region[x][y-1];
-						} else if (getPixel(image, x, y-1) ==0) {
-							System.out.println("Create a new label id and assign it to the current pixel");
-							cpt++;
-							region[x][y] = cpt;
-							output.setRGB(x, y, color.getRGB());
-						}
-					}
-					System.out.println("region["+x+"]["+y+"]=" + region[x][y]);
-					output.setRGB(x, y, color.getRGB());
-				}
-			}
-		}
-		return output;
-	}
-
 	public static BufferedImage zoom(BufferedImage image, int zoomLevel){
 		int newImageWidth = image.getWidth() * zoomLevel;
 		int newImageHeight = image.getHeight() * zoomLevel;
@@ -303,89 +266,123 @@ public class Qcm extends JPanel {
 		return resizedImage;
 	}
 
-	public static BufferedImage detectObject(BufferedImage image){
-		BufferedImage output = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
-		int[] pixelsY = new int[image.getHeight()];
+	public static int[] getPixelsX(BufferedImage image){
 		int[] pixelsX = new int[image.getWidth()];
-		int[] startEndIndex ={-1,1};
-		ArrayList<Integer> listY = new ArrayList<Integer>();
-		ArrayList<Integer> listX = new ArrayList<Integer>();
 		for (int x = 0; x < image.getWidth(); x++) {
 			for (int y = 0; y < image.getHeight(); y++) {
-				// Initialize output to white color
-				output.setRGB(x, y,  mixColor(255, 255, 255));
 				// we count our black pixels in a binary image
 				if ( getPixel(image, x, y) != 0){
-					pixelsY[y]++;
 					pixelsX[x]++;
 				}	
 			}
 		}
-		for(int i =0; i<pixelsY.length; i++){
-			if(pixelsY[i] != 0 && startEndIndex[0] == -1) {
-				startEndIndex[0] = i;
-				listY.add(i);
-			} else if(pixelsY[i] == 0 && startEndIndex[0] != -1){
-				startEndIndex[1] = i;
-				listY.add(i);
-				startEndIndex[0] = -1;
+		return pixelsX;
+	}
+	
+	public static int[] getPixelsY(BufferedImage image){
+		int[] pixelsY = new int[image.getHeight()];
+		for (int x = 0; x < image.getWidth(); x++) {
+			for (int y = 0; y < image.getHeight(); y++) {
+				// we count our black pixels in a binary image
+				if ( getPixel(image, x, y) != 0){
+					pixelsY[y]++;
+				}	
 			}
 		}
-		startEndIndex[0] =-1;
+		return pixelsY;
+	}
+	
+	public static ArrayList<Integer> getListX(int[] pixelsX){
+		ArrayList<Integer> listX = new ArrayList<Integer>();
+		boolean start = false;
 		for(int i=0; i<pixelsX.length; i++){
-			if(pixelsX[i] != 0 && startEndIndex[0] == -1) {
-				startEndIndex[0] = i;
+			if(pixelsX[i] != 0 && !start) {
+				start =true;
 				listX.add(i);
-			} else if(pixelsX[i] == 0 && startEndIndex[0] != -1){
-				startEndIndex[1] = i;
+			} else if(pixelsX[i] == 0 && start){
 				listX.add(i);
-				startEndIndex[0] = -1;
+				start = false;
 			}
 		}
-		System.out.println("-----------------------");
-		int i=1;
+		return listX;
+	}
+	
+	public static ArrayList<Integer> getListY(int[] pixelsY){
+		ArrayList<Integer> listY = new ArrayList<Integer>();
+		boolean start = false;
+		for(int i =0; i<pixelsY.length; i++){
+			if(pixelsY[i] != 0 && !start) {
+				start =true;
+				listY.add(i);
+			} else if(pixelsY[i] == 0 && start){
+				listY.add(i);
+				start=false;
+			}
+		}
+		return listY;
+	}
+	
+	public static void detectObject(BufferedImage image){
+		ArrayList<Integer> listY = new ArrayList<Integer>();
+		ArrayList<Integer> listX = new ArrayList<Integer>();
+		ArrayList<String> answers = new ArrayList<String>();
+		listX = getListX(getPixelsX(image));
+		listY = getListY(getPixelsY(image));
+		answers = findAnswers(image, listX, listY);
+		System.out.println("-----------------");
+		for(int i=0; i<answers.size(); i++){
+			System.out.println(i + ". " +answers.get(i));
+		}
+	}
+
+	public static ArrayList<String> findAnswers(BufferedImage image, ArrayList<Integer> listX, ArrayList<Integer> listY){
+		ArrayList<String> answers = new ArrayList<String>();
+		answers.add(0, "");
+		int i=1, cpt, casePosition;
 		boolean dup;
-		int trackX;
 		for(int k=0; k<listY.size(); k=k+2){
-			int cpt=0;
+			cpt=0;
 			dup= false;
-			trackX = 0;
+			casePosition = 0;
 			for(int l=0; l<listX.size(); l=l+2){
 				for(int x=listX.get(l); x<listX.get(l+1); x++){
 					for(int y=listY.get(k); y<listY.get(k+1); y++){
 						if(getPixel(image, x, y) != 0){
 							if(x >= listX.get(l) && x <= listX.get(l+1) ){
 								cpt++;
-								trackX = l;
-								//System.out.println("cpt: " + cpt + " x: " +x );
-								//System.out.println("-------- "+ listX.get(l) + ", " + listX.get(l+1) + " ------");
+								casePosition = l;
 							}
 						}
 					}
 				}
 				if(cpt!=0){
-					if(trackX == 0 && !dup){
+					if(casePosition == 0 && !dup){
 						System.out.println("question " + (k+i) + " case A cochŽ!");
+						answers.add(k+i, "A");
 						i--;
 						dup = true;
 					}
-					else if(trackX == 2 && !dup){
+					else if(casePosition == 2 && !dup){
 						System.out.println("question " + (k+i) + " case B cochŽ!");
+						answers.add(k+i, "B");
 						i--;
 						dup = true;
 					}
-					else if(trackX == 4 && !dup){
+					else if(casePosition == 4 && !dup){
 						System.out.println("question " + (k+i) + " case C cochŽ!");
+						answers.add(k+i, "C");
 						i--;
 						dup = true;
 					}
-					else if(trackX == 6 && !dup){
+					else if(casePosition == 6 && !dup){
 						System.out.println("question " + (k+i) + " case D cochŽ!");
+						answers.add(k+i, "D");
 						i--;
 						dup = true;
 					}
-					else if(trackX == 8 && !dup){
+					else if(casePosition == 8 && !dup){
 						System.out.println("question " + (k+i) + " case E cochŽ!");
+						answers.add(k+i, "E");
 						i--;
 						dup = true;
 					}
@@ -397,7 +394,7 @@ public class Qcm extends JPanel {
 				}
 			}
 		}
-		return output;
+		return answers;
 	}
 
 }
