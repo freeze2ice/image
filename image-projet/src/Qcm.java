@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.Random;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -31,6 +30,7 @@ public class Qcm extends JPanel {
 		bi3 = grayImage(bi3);
 		bi3 = binarizeImage(bi3, 250);
 		bi2 = ouverture(bi3);
+		bi2 = ouverture(bi2);
 		bi3 = detectObject(bi2);
 
 		ImageIcon icon = new ImageIcon(bi);
@@ -321,7 +321,6 @@ public class Qcm extends JPanel {
 				}	
 			}
 		}
-
 		for(int i =0; i<pixelsY.length; i++){
 			if(pixelsY[i] != 0 && startEndIndex[0] == -1) {
 				startEndIndex[0] = i;
@@ -343,49 +342,29 @@ public class Qcm extends JPanel {
 				startEndIndex[0] = -1;
 			}
 		}
-		/*
-		System.out.println("Y axis:");
-		Iterator<Integer> it = listY.iterator();
-		while(it.hasNext()){
-			System.out.println(it.next());
-		}
-		System.out.println("--------------------------");
-		System.out.println("X axis:");
-		Iterator<Integer> it2 = listX.iterator();
-		while(it2.hasNext()){
-			System.out.println(it2.next());
-		}
-		 */
 		System.out.println("-----------------------");
 		int i=1;
 		boolean dup;
 		int trackX;
 		for(int k=0; k<listY.size(); k=k+2){
-			System.out.println("----------------k: " + k);
 			int cpt=0;
 			dup= false;
 			trackX = 0;
 			for(int l=0; l<listX.size(); l=l+2){
-				System.out.println("----------l: " + l);
 				for(int x=listX.get(l); x<listX.get(l+1); x++){
-					//System.out.println("-----x: " + x);
 					for(int y=listY.get(k); y<listY.get(k+1); y++){
-						//System.out.println("y: " + y);
 						if(getPixel(image, x, y) != 0){
 							if(x >= listX.get(l) && x <= listX.get(l+1) ){
 								cpt++;
-									trackX = l;
-								//System.out.println("cpt= " +  cpt + " l= " + trackX );
+								trackX = l;
+								//System.out.println("cpt: " + cpt + " x: " +x );
+								//System.out.println("-------- "+ listX.get(l) + ", " + listX.get(l+1) + " ------");
 							}
 						}
 					}
 				}
-				//System.out.println("in if cpt= " +  cpt);
-				//System.out.println("----------" + listY.get(k+1) +" " + listX.get(l+1) );
-				//if(x==trackX){
 				if(cpt!=0){
 					if(trackX == 0 && !dup){
-						System.out.println("l= " + trackX);
 						System.out.println("question " + (k+i) + " case A cochŽ!");
 						i--;
 						dup = true;
@@ -416,10 +395,6 @@ public class Qcm extends JPanel {
 						i--;
 					}
 				}
-				//output.setRGB(x, y, mixColor(0, 0, 0));
-				//}
-				//}
-				//}
 			}
 		}
 		return output;
