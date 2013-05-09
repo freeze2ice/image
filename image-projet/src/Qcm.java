@@ -25,12 +25,13 @@ public class Qcm extends JPanel {
 		}
 
 		BufferedImage bi3 = null;
+		BufferedImage bi2 = null;
 
 		bi3 = colorFilter(bi, 450);
 		bi3 = grayImage(bi3);
 		bi3 = binarizeImage(bi3, 250);
-		bi3 = ouverture(bi3);
-		bi3 = detectObject(bi3);
+		bi2 = ouverture(bi3);
+		bi3 = detectObject(bi2);
 
 		ImageIcon icon = new ImageIcon(bi);
 		JLabel label = new JLabel();
@@ -40,6 +41,10 @@ public class Qcm extends JPanel {
 		JLabel label2 = new JLabel();
 		label2.setIcon(new ImageIcon(bi3));
 		this.add(label2, BorderLayout.EAST);
+
+		JLabel label3 = new JLabel();
+		label3.setIcon(new ImageIcon(bi2));
+		this.add(label3, BorderLayout.CENTER);
 
 	}
 
@@ -322,8 +327,8 @@ public class Qcm extends JPanel {
 				startEndIndex[0] = i;
 				listY.add(i);
 			} else if(pixelsY[i] == 0 && startEndIndex[0] != -1){
-				startEndIndex[1] = i-1;
-				listY.add(i-1);
+				startEndIndex[1] = i;
+				listY.add(i);
 				startEndIndex[0] = -1;
 			}
 		}
@@ -333,8 +338,8 @@ public class Qcm extends JPanel {
 				startEndIndex[0] = i;
 				listX.add(i);
 			} else if(pixelsX[i] == 0 && startEndIndex[0] != -1){
-				startEndIndex[1] = i-1;
-				listX.add(i-1);
+				startEndIndex[1] = i;
+				listX.add(i);
 				startEndIndex[0] = -1;
 			}
 		}
@@ -349,28 +354,45 @@ public class Qcm extends JPanel {
 		while(it2.hasNext()){
 			System.out.println(it2.next());
 		}
+		int dup=0, dup2=0, dup3=0, dup4=0, dup5=0;
 		System.out.println("-----------------------");
 		for(int k=0; k<listY.size(); k=k+2){
-			for(int x=0; x<image.getWidth(); x++){
-				for(int y=listY.get(k); y<listY.get(k+1); y++){
-					if(getPixel(image, x, y) != 0){
-						Iterator<Integer> it3 = listX.iterator();
-						while(it3.hasNext()){
-							if(x == it3.next()){
-									if(x ==listX.get(0) || x == listX.get(1)) System.out.println("question " + (k/2+1) + " case A coché!");
-									else if(x == listX.get(2) || x == listX.get(3)) System.out.println("question " + (k/2+1) + " case B coché!");
-									else if(x == listX.get(4) || x == listX.get(5)) System.out.println("question " + (k/2+1) + " case C coché!");
-									else if(x == listX.get(6) || x == listX.get(7)) System.out.println("question " + (k/2+1) + " case D coché!");
-									else if(x == listX.get(8) || x == listX.get(9)) System.out.println("question " + (k/2+1) + " case E coché!");
-									else System.out.println("je sais pas enncore!");
+			//System.out.println("------------k: " + k);
+			for(int l=0; l<listX.size(); l=l+2){
+				for(int x=listX.get(l); x<listX.get(l+1); x++){
+					//System.out.println("-----x: " + x);
+					for(int y=listY.get(k); y<listY.get(k+1); y++){
+						//System.out.println("y: " + y);
+						if(getPixel(image, x, y) != 0){
+							//System.out.println("in if");
+							Iterator<Integer> it3 = listX.iterator();
+							while(it3.hasNext()){
+								if(x == it3.next()){
+									if((x ==listX.get(0) || x == listX.get(1)) && dup == 0){ 
+										System.out.println("question " + (k/2+1) + " case A coché!");	
+										dup=1;
+									}
+									else if((x == listX.get(2) || x == listX.get(3)) && dup2 ==0){
+										System.out.println("question " + (k/2+1) + " case B coché!");
+									}
+									else if((x == listX.get(4) || x == listX.get(5)) && dup3 ==0){
+										System.out.println("question " + (k/2+1) + " case C coché!");
+									}
+									else if((x == listX.get(6) || x == listX.get(7)) && dup4 ==0){
+										System.out.println("question " + (k/2+1) + " case D coché!");
+									}
+									else if((x == listX.get(8) || x == listX.get(9)) && dup5 ==0){
+										System.out.println("question " + (k/2+1) + " case E coché!");
+									}
+									//else System.out.println("je sais pas enncore!");
+								}
 							}
+							output.setRGB(x, y, mixColor(0, 0, 0));
 						}
-						output.setRGB(x, y, mixColor(0, 0, 0));
 					}
 				}
 			}
 		}
-
 		return output;
 	}
 
