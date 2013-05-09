@@ -343,6 +343,7 @@ public class Qcm extends JPanel {
 				startEndIndex[0] = -1;
 			}
 		}
+		/*
 		System.out.println("Y axis:");
 		Iterator<Integer> it = listY.iterator();
 		while(it.hasNext()){
@@ -354,14 +355,16 @@ public class Qcm extends JPanel {
 		while(it2.hasNext()){
 			System.out.println(it2.next());
 		}
+		 */
 		System.out.println("-----------------------");
 		int i=1;
 		boolean dup;
+		int trackX;
 		for(int k=0; k<listY.size(); k=k+2){
 			System.out.println("----------------k: " + k);
 			int cpt=0;
 			dup= false;
-			System.out.println("cpt= " + cpt);
+			trackX = 0;
 			for(int l=0; l<listX.size(); l=l+2){
 				System.out.println("----------l: " + l);
 				for(int x=listX.get(l); x<listX.get(l+1); x++){
@@ -369,45 +372,54 @@ public class Qcm extends JPanel {
 					for(int y=listY.get(k); y<listY.get(k+1); y++){
 						//System.out.println("y: " + y);
 						if(getPixel(image, x, y) != 0){
-							cpt++;
-							//System.out.println("in if cpt= " +  cpt);
-							//System.out.println("----------" + listY.get(k+1) +" " + listX.get(l+1) );
-							if(x==listX.get(l+1)-1){
-									if((x ==listX.get(0) || x == listX.get(1)-1) && !dup){ 
-										System.out.println("question " + (k+i) + " case A cochŽ!");
-										i--;
-										dup = true;
-									}
-									else if((x == listX.get(2) || x == listX.get(3)-1) && !dup){
-										System.out.println("question " + (k+i) + " case B cochŽ!");
-										i--;
-										dup = true;
-									}
-									else if((x == listX.get(4) || x == listX.get(5)-1) && !dup){
-										System.out.println("question " + (k+i) + " case C cochŽ!");
-										i--;
-										dup = true;
-									}
-									else if((x == listX.get(6) || x == listX.get(7)-1) && !dup){
-										System.out.println("question " + (k+i) + " case D cochŽ!");
-										i--;
-										dup = true;
-									}
-									else if((x == listX.get(8) || x == listX.get(9)-1) && !dup){
-										System.out.println("question " + (k+i) + " case E cochŽ!");
-										i--;
-										dup = true;
-									}
-									else if(!dup){
-										System.out.println("je sais pas enncore!");
-										System.out.println("i: " + i);
-										i--;
-									}
+							if(x >= listX.get(l) && x <= listX.get(l+1) ){
+								cpt++;
+									trackX = l;
+								//System.out.println("cpt= " +  cpt + " l= " + trackX );
 							}
-							output.setRGB(x, y, mixColor(0, 0, 0));
 						}
 					}
 				}
+				//System.out.println("in if cpt= " +  cpt);
+				//System.out.println("----------" + listY.get(k+1) +" " + listX.get(l+1) );
+				//if(x==trackX){
+				if(cpt!=0){
+					if(trackX == 0 && !dup){
+						System.out.println("l= " + trackX);
+						System.out.println("question " + (k+i) + " case A cochŽ!");
+						i--;
+						dup = true;
+					}
+					else if(trackX == 2 && !dup){
+						System.out.println("question " + (k+i) + " case B cochŽ!");
+						i--;
+						dup = true;
+					}
+					else if(trackX == 4 && !dup){
+						System.out.println("question " + (k+i) + " case C cochŽ!");
+						i--;
+						dup = true;
+					}
+					else if(trackX == 6 && !dup){
+						System.out.println("question " + (k+i) + " case D cochŽ!");
+						i--;
+						dup = true;
+					}
+					else if(trackX == 8 && !dup){
+						System.out.println("question " + (k+i) + " case E cochŽ!");
+						i--;
+						dup = true;
+					}
+					else if(!dup){
+						System.out.println("je sais pas enncore!");
+						System.out.println("i: " + i);
+						i--;
+					}
+				}
+				//output.setRGB(x, y, mixColor(0, 0, 0));
+				//}
+				//}
+				//}
 			}
 		}
 		return output;
