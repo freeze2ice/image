@@ -1,4 +1,6 @@
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.io.File;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -8,29 +10,36 @@ public class Hamed {
 	public Hamed() {}
 
 	public static void main(String[] args) {
-		File image = new File("qcms/qcmcolor.jpg");
-		JFrame frame = new JFrame("\tInitial Image");
-		JPanel panel = new Qcm(image);
-		frame.getContentPane().add(panel, BorderLayout.NORTH);
-		frame.setLocation(50, 50);
-		frame.pack();
-		frame.setVisible(true);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		double screenWidth = screenSize.getWidth();
+		//double screenHeight = screenSize.getHeight();
+		
+		File image = new File("qcms/qcmcolor5.jpg");
 		File image2 = new File("qcms/qcmcolor4.jpg");
-		JFrame frame2 = new JFrame("\t2nd Image");
-		JPanel panel2 = new Qcm2(image2);
-		frame2.getContentPane().add(panel2, BorderLayout.NORTH);
-		frame2.pack();
-		frame2.setVisible(true);
-		frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		JPanel panel3 = new CompareImages(image, image2);
 		JFrame frame3 = new JFrame("\tResults");
 		frame3.getContentPane().add(panel3, BorderLayout.NORTH);
 		frame3.pack();
+		frame3.setLocation((int)screenWidth-250, 0);
 		frame3.setVisible(true);
 		frame3.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		JPanel panel4 = new MyJPanel(image, 450, 250, true);
+		JFrame frame4 = new JFrame("Image1: " + image.getName());
+		frame4.getContentPane().add(panel4, BorderLayout.NORTH);
+		frame4.pack();
+		frame4.setVisible(true);
+		frame4.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		JPanel panel5 = new MyJPanel(image2, 450, 250, true);
+		JFrame frame5 = new JFrame("Image2: " + image2.getName());
+		frame5.getContentPane().add(panel5, BorderLayout.NORTH);
+		frame5.pack();
+		frame5.setLocation(50, 50);
+		frame5.setVisible(true);
+		frame5.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 	}
 

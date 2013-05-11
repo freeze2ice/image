@@ -1,52 +1,20 @@
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import javax.imageio.ImageIO;
 
-public class Qcm {
-	
+
+public class Tools {
+
 	private File image;
 	private ArrayList<String> answers;
-	private	BufferedImage bi;
 	
-	public Qcm(File image) {
-		this.image=image;
-		try {
-			bi = ImageIO.read(image);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	/*	
-		bi = colorFilter(bi, colorSeuil);
-		bi = grayImage(bi);
-		bi = binarizeImage(bi, 250);
-		bi = ouverture(bi);
-		if(secOuverture) bi = ouverture(bi);
-		this.setAnswers(detectObject(bi));
-	
-		ImageIcon icon = new ImageIcon(bi);
-		JLabel label = new JLabel();
-		label.setIcon(icon);
-		this.add(label, BorderLayout.NORTH);
+	public Tools() {
 
-		JLabel label2 = new JLabel();
-		label2.setIcon(new ImageIcon(bi2));
-		this.add(label2, BorderLayout.WEST);
-
-		JLabel label3 = new JLabel();
-		label3.setIcon(new ImageIcon(bi3));
-		this.add(label3, BorderLayout.CENTER);
-
-		JLabel label4 = new JLabel();
-		label4.setIcon(new ImageIcon(bi4));
-		this.add(label4, BorderLayout.EAST);
-	*/
 	}
-
-	public int getPixel(BufferedImage image, int x, int y) {
+	
+	public static int getPixel(BufferedImage image, int x, int y) {
 		int red = 0, green = 0, blue = 0, pixel = 0;
 		Color color;
 		color = new Color(image.getRGB(x, y));
@@ -57,11 +25,11 @@ public class Qcm {
 		return pixel;
 	}
 
-	private int mixColor(int red, int green, int blue) {
+	private static int mixColor(int red, int green, int blue) {
 		return red << 16 | green << 8 | blue;
 	}
 
-	public BufferedImage grayImage(BufferedImage image) {
+	public static BufferedImage grayImage(BufferedImage image) {
 		BufferedImage output = new BufferedImage(image.getWidth(),image.getHeight(), image.getType());
 		int pixel = 0;
 		for (int x = 0; x < image.getWidth(); x++) {
@@ -74,7 +42,7 @@ public class Qcm {
 		return output;
 	}
 
-	public BufferedImage binarizeImage(BufferedImage grayImage, int threshold) {
+	public static BufferedImage binarizeImage(BufferedImage grayImage, int threshold) {
 		BufferedImage output = new BufferedImage(grayImage.getWidth(), grayImage.getHeight(), grayImage.getType());
 		int pixel = 0;
 		for (int x = 0; x < grayImage.getWidth(); x++) {
@@ -90,7 +58,7 @@ public class Qcm {
 		return output;
 	}
 
-	public BufferedImage dilatation(BufferedImage image) {
+	public static BufferedImage dilatation(BufferedImage image) {
 		BufferedImage output = new BufferedImage(image.getWidth(),
 				image.getHeight(), image.getType());
 		int[] b = { 1, 1, 1, 1 };
@@ -110,7 +78,7 @@ public class Qcm {
 		return output;
 	}
 
-	public BufferedImage erosion(BufferedImage image) {
+	public static BufferedImage erosion(BufferedImage image) {
 		BufferedImage output = new BufferedImage(image.getWidth(),
 				image.getHeight(), image.getType());
 		int[] b = { 1, 1, 1, 1 };
@@ -130,24 +98,28 @@ public class Qcm {
 		return output;
 	}
 
-	public BufferedImage ouverture(BufferedImage image){
+	public static BufferedImage ouverture(BufferedImage image){
 		BufferedImage output = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
 		output = dilatation(image);
 		output = erosion(image);
 		return output;
 	}
 
-	public BufferedImage fermeture(BufferedImage image){
+	public static BufferedImage fermeture(BufferedImage image){
 		BufferedImage output = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
 		output = erosion(image);
 		output = dilatation(image);
 		return output;
 	}
 
-	public BufferedImage colorFilter(BufferedImage image, int seuil){
+	public static BufferedImage colorFilter(BufferedImage image, int seuil){
 		BufferedImage output = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
 		for(int x=0; x<image.getWidth(); x++){
 			for(int y=0; y<image.getHeight(); y++){	
+				/*
+				output.setRGB(x, y, (image.getRGB(x, y) & 0xff00ff00)
+                        | ((image.getRGB(x, y) & 0xff0000) >> 16)
+                        | ((image.getRGB(x, y) & 0xff) << 16)); */
 				if( getPixel(image, x, y) > seuil){
 					output.setRGB(x, y,  mixColor(255, 255, 255));
 				}
@@ -157,7 +129,7 @@ public class Qcm {
 		return output;
 	}
 
-	public int[] getPixelsX(BufferedImage image){
+	public static int[] getPixelsX(BufferedImage image){
 		int[] pixelsX = new int[image.getWidth()];
 		for (int x = 0; x < image.getWidth(); x++) {
 			for (int y = 0; y < image.getHeight(); y++) {
@@ -170,7 +142,7 @@ public class Qcm {
 		return pixelsX;
 	}
 	
-	public int[] getPixelsY(BufferedImage image){
+	public static int[] getPixelsY(BufferedImage image){
 		int[] pixelsY = new int[image.getHeight()];
 		for (int x = 0; x < image.getWidth(); x++) {
 			for (int y = 0; y < image.getHeight(); y++) {
@@ -183,7 +155,7 @@ public class Qcm {
 		return pixelsY;
 	}
 	
-	public ArrayList<Integer> getListX(int[] pixelsX){
+	public static ArrayList<Integer> getListX(int[] pixelsX){
 		ArrayList<Integer> listX = new ArrayList<Integer>();
 		boolean start = false;
 		for(int i=0; i<pixelsX.length; i++){
@@ -198,7 +170,7 @@ public class Qcm {
 		return listX;
 	}
 	
-	public ArrayList<Integer> getListY(int[] pixelsY){
+	public static ArrayList<Integer> getListY(int[] pixelsY){
 		ArrayList<Integer> listY = new ArrayList<Integer>();
 		boolean start = false;
 		for(int i =0; i<pixelsY.length; i++){
@@ -220,14 +192,14 @@ public class Qcm {
 		listX = getListX(getPixelsX(image));
 		listY = getListY(getPixelsY(image));
 		answers = findAnswers(image, listX, listY);
-		/*System.out.println("------- "+ getImageName() + " ----------");
+		System.out.println("------- "+ getImageName() + " ----------");
 		for(int i=0; i<answers.size(); i++){
 			System.out.println(i + ". " +answers.get(i));
-		}*/
+		}
 		return answers;
 	}
 
-	public ArrayList<String> findAnswers(BufferedImage image, ArrayList<Integer> listX, ArrayList<Integer> listY){
+	public static ArrayList<String> findAnswers(BufferedImage image, ArrayList<Integer> listX, ArrayList<Integer> listY){
 		ArrayList<String> answers = new ArrayList<String>();
 		answers.add(0, "");
 		int i=1, cpt, casePosition;
@@ -296,21 +268,5 @@ public class Qcm {
 		this.answers = answers;
 	}
 
-	public BufferedImage getBi() {
-		return bi;
-	}
 
-	public void setBi(BufferedImage bi) {
-		this.bi = bi;
-	}
-	
-	public void start(int colorSeuil, boolean secOuverture){
-		bi = colorFilter(bi, colorSeuil);
-		bi = grayImage(bi);
-		bi = binarizeImage(bi, 250);
-		bi = ouverture(bi);
-		if(secOuverture) bi = ouverture(bi);
-		setAnswers(detectObject(bi));
-	}
-		
 }

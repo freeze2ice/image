@@ -29,11 +29,11 @@ public class Qcm2 extends JPanel {
 		BufferedImage bi2 = null;
 		BufferedImage bi4 = null;
 
-		bi2 = colorFilter(bi, 450);
+		bi2 = colorFilter(bi, 250);
 		bi3 = grayImage(bi2);
 		bi3 = binarizeImage(bi3, 250);
 		bi4 = ouverture(bi3);
-		bi4 = ouverture(bi4);
+		//bi4 = ouverture(bi4);
 		this.setAnswers(detectObject(bi4));
 
 		ImageIcon icon = new ImageIcon(bi);
