@@ -1,21 +1,13 @@
 import java.awt.BorderLayout;
 import java.io.File;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 
 public class Hamed {
 
-	public Hamed() {
-		// TODO Auto-generated constructor stub
-	}
+	public Hamed() {}
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		File image = new File("qcms/qcmcolor.jpg");
 		JFrame frame = new JFrame("\tInitial Image");
 		JPanel panel = new Qcm(image);
@@ -25,7 +17,7 @@ public class Hamed {
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		File image2 = new File("qcms/qcmcolor.jpg");
+		File image2 = new File("qcms/qcmcolor4.jpg");
 		JFrame frame2 = new JFrame("\t2nd Image");
 		JPanel panel2 = new Qcm2(image2);
 		frame2.getContentPane().add(panel2, BorderLayout.NORTH);
@@ -37,7 +29,7 @@ public class Hamed {
 		JFrame frame3 = new JFrame("\tResults");
 		frame3.getContentPane().add(panel3, BorderLayout.NORTH);
 		frame3.pack();
-		frame.setVisible(true);
+		frame3.setVisible(true);
 		frame3.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 	}
