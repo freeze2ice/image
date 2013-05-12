@@ -138,7 +138,7 @@ public class Qcm {
 				// we count our black pixels in a binary image
 				if ( getPixel(image, x, y) != 0){
 					pixelsX[x]++;
-				}	
+				}
 			}
 		}
 		return pixelsX;
@@ -151,7 +151,7 @@ public class Qcm {
 				// we count our black pixels in a binary image
 				if ( getPixel(image, x, y) != 0){
 					pixelsY[y]++;
-				}	
+				}
 			}
 		}
 		return pixelsY;
@@ -188,14 +188,68 @@ public class Qcm {
 		return listY;
 	}
 
+	public ArrayList<Integer> getZerosListX(int[] pixelsX){
+		ArrayList<Integer> listX = new ArrayList<Integer>();
+		boolean b = false;
+		for(int i=0; i<pixelsX.length; i++){
+			if(pixelsX[i] == 0 && !b) {
+				listX.add(i);
+				b = true;
+			} else if(pixelsX[i] != 0 && b){
+				listX.add(i);
+				b = false;
+			}
+		}
+		return listX;
+	}
+
+	public ArrayList<Integer> calculateSpace(ArrayList<Integer> zerosListX){
+		ArrayList<Integer> space = new ArrayList<Integer>();
+		int s=0;
+		for(int i=0; i<zerosListX.size()-1; i=i+2){
+			System.out.println("end , start: "+ zerosListX.get(i+1) +" "+ zerosListX.get(i));
+			System.out.println("space: "+ (zerosListX.get(i+1) - zerosListX.get(i)));
+			s= zerosListX.get(i+1) - zerosListX.get(i);
+			space.add(s);
+		}
+		float average = average(space);
+		ArrayList<Integer> seqIndex = new ArrayList<Integer>() ;
+		System.out.println("average: "+average);
+		for(int i=0; i<space.size()-1; i++){
+			if(space.get(i) > average){
+				System.out.println("multiple sequence detected, i: " + i);
+				seqIndex.add(i);
+			}
+		}
+		for(int i=0; i< seqIndex.size(); i++){
+			System.out.println(zerosListX.get(seqIndex.get(i)*2+1));
+		}
+		
+		return space;
+	}
+
+	public float average(ArrayList<Integer> space){
+		float sum = 0;
+		for(int i=0; i<space.size(); i++){
+			sum += space.get(i);
+		}
+		return sum/space.size();
+	}
+
+	public ArrayList<ArrayList<Integer>> createSequences(ArrayList<Integer> listX){
+		ArrayList<ArrayList<Integer>> sequences = new ArrayList<ArrayList<Integer>>();
+		for(int i=0; i<listX.size(); i++){
+
+		}
+		return sequences;
+	}
+
 	public ArrayList<String> detectObject(BufferedImage image){
 		ArrayList<Integer> listY = new ArrayList<Integer>();
 		ArrayList<Integer> listX = new ArrayList<Integer>();
-		ArrayList<String> answers = new ArrayList<String>();
 		listX = getListX(getPixelsX(image));
 		listY = getListY(getPixelsY(image));
-		answers = findAnswers(image, listX, listY);
-		return answers;
+		return findAnswers(image, listX, listY);
 	}
 
 	public ArrayList<String> findAnswers(BufferedImage image, ArrayList<Integer> listX, ArrayList<Integer> listY){

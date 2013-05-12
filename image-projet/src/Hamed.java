@@ -17,7 +17,7 @@ public class Hamed {
 		
 		File image = new File("qcms/qcmcolor8.jpg");
 		File image2 = new File("qcms/qcmcolor7.jpg");
-		
+		/*
 		JPanel panel3 = new CompareImages(image, image2);
 		JFrame frame3 = new JFrame("\tResults");
 		frame3.getContentPane().add(panel3, BorderLayout.NORTH);
@@ -40,9 +40,9 @@ public class Hamed {
 		frame5.setLocation((int)screenWidth/2, 0);
 		frame5.setVisible(true);
 		frame5.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		File image3 = new File("qcms/qcm4.jpg");
-		JPanel panel1 = new MyJPanel(image3, false, 600, 240);
+		*/
+		File image3 = new File("qcms/qcmcolor51.jpg");
+		JPanel panel1 = new MyJPanel(image3, true, 550, 240);
 		JFrame frame1 = new JFrame("Histogrammes: " + image3.getName());
 		frame1.getContentPane().add(panel1, BorderLayout.NORTH);
 		frame1.pack();

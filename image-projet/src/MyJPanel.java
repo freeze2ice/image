@@ -58,6 +58,10 @@ public class MyJPanel extends JPanel {
 		bi = qcm.colorFilter(bi, colorThreshold);
 		bi = qcm.grayImage(bi);
 		
+		JLabel label1 = new JLabel();
+		label1.setIcon(new ImageIcon(bi));
+		this.add(label1, BorderLayout.NORTH);
+		
 		JLabel label2 = new JLabel();
 		label2.setIcon(new ImageIcon(histograms.plotHistogram(bi)));
 		this.add(label2, BorderLayout.WEST);
@@ -73,6 +77,8 @@ public class MyJPanel extends JPanel {
 		JLabel label4 = new JLabel();
 		label4.setIcon(new ImageIcon(histograms.plotHorizHistogram(bi)));
 		this.add(label4, BorderLayout.EAST);
+		
+		qcm.calculateSpace(qcm.getZerosListX(qcm.getPixelsX(bi)));
 		
 	}
 	
