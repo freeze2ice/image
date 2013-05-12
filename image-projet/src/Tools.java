@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
@@ -256,6 +257,16 @@ public class Tools {
 		return answers;
 	}
 
+	public static BufferedImage zoom(BufferedImage image, int zoomLevel){
+		int newImageWidth = image.getWidth() * zoomLevel;
+		int newImageHeight = image.getHeight() * zoomLevel;
+		BufferedImage resizedImage = new BufferedImage(newImageWidth , newImageHeight, image.getType());
+		Graphics2D g = resizedImage.createGraphics();
+		g.drawImage(image, 0, 0, newImageWidth , newImageHeight , null);
+		g.dispose();
+		return resizedImage;
+	}
+	
 	public String getImageName(){
 		return image.getName();
 	}

@@ -2,14 +2,13 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
+public class Histograms {
 
-public class Misc {
-
-	public Misc() {
-		// TODO Auto-generated constructor stub
-	}
-
-	public static BufferedImage zoom(BufferedImage image, int zoomLevel){
+	private BufferedImage bi;
+	
+	public Histograms() {}
+	
+	public BufferedImage zoom(BufferedImage image, int zoomLevel){
 		int newImageWidth = image.getWidth() * zoomLevel;
 		int newImageHeight = image.getHeight() * zoomLevel;
 		BufferedImage resizedImage = new BufferedImage(newImageWidth , newImageHeight, image.getType());
@@ -19,12 +18,13 @@ public class Misc {
 		return resizedImage;
 	}
 
-	public static BufferedImage plotHistogram(BufferedImage image) {
-		int width = 256;
-		int height = image.getHeight();
+	public BufferedImage plotHistogram(BufferedImage image) {
+		int width = 256, height = image.getHeight();
 		int pixel;
 		int[] pixels = new int[256];
 		BufferedImage output = new BufferedImage(width, height, image.getType());
+		Graphics2D g = output.createGraphics();
+		g.setColor(Color.BLACK);
 		for (int i = 0; i < pixels.length; i++) {
 			pixels[i] = 0;
 		}
@@ -34,6 +34,7 @@ public class Misc {
 				output.setRGB(i, j,  mixColor(255, 255, 255));
 			}
 		}
+		g.drawString("0 --> 255", 5, 15);
 		for (int x = 0; x < image.getWidth(); x++) {
 			for (int y = 0; y < image.getHeight(); y++) {
 				pixel =  getPixel(image, x, y) / 3;
@@ -54,7 +55,7 @@ public class Misc {
 		return output;
 	}
 
-	public static BufferedImage plotHorizHistogram(BufferedImage image) {
+	public BufferedImage plotHorizHistogram(BufferedImage image) {
 		int width = image.getWidth();
 		int height = image.getHeight();
 		int[] pixels = new int[height];
@@ -64,10 +65,10 @@ public class Misc {
 		}
 		for (int x = 0; x < image.getWidth(); x++) {
 			for (int y = 0; y < image.getHeight(); y++) {
-				// initialze output to white color
+				// Initialize output to white color
 				output.setRGB(x, y,  mixColor(255, 255, 255));
-				// we count our black pixels in a binary image
-				if ( getPixel(image, x, y) == 0)
+				// we count our white pixels in a binary image
+				if ( getPixel(image, x, y) != 0)
 					pixels[y]++;
 			}
 		}
@@ -82,7 +83,7 @@ public class Misc {
 		return output;
 	}
 
-	public static BufferedImage plotVertiHistogram(BufferedImage image) {
+	public BufferedImage plotVertiHistogram(BufferedImage image) {
 		int[] pixels = new int[image.getWidth()];
 		BufferedImage output = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
 		for (int i = 0; i < pixels.length; i++) {
@@ -91,10 +92,10 @@ public class Misc {
 
 		for (int x = 0; x < image.getWidth(); x++) {
 			for (int y = 0; y < image.getHeight(); y++) {
-				// initialze output to white color
+				// Initialize output to white color
 				output.setRGB(x, y,  mixColor(255, 255, 255));
-				// we count our black pixels in a binary image
-				if ( getPixel(image, x, y) == 0)
+				// we count our white pixels in a binary image
+				if ( getPixel(image, x, y) != 0)
 					pixels[x]++;
 			}
 		}
@@ -120,6 +121,14 @@ public class Misc {
 
 	private static int mixColor(int red, int green, int blue) {
 		return red << 16 | green << 8 | blue;
+	}
+
+	public BufferedImage getBi() {
+		return bi;
+	}
+
+	public void setBi(BufferedImage bi) {
+		this.bi = bi;
 	}
 	
 }

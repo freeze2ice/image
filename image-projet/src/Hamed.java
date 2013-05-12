@@ -13,10 +13,10 @@ public class Hamed {
 		
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		double screenWidth = screenSize.getWidth();
-		//double screenHeight = screenSize.getHeight();
+		double screenHeight = screenSize.getHeight();
 		
-		File image = new File("qcms/qcmcolor5.jpg");
-		File image2 = new File("qcms/qcmcolor4.jpg");
+		File image = new File("qcms/qcmcolor8.jpg");
+		File image2 = new File("qcms/qcmcolor7.jpg");
 		
 		JPanel panel3 = new CompareImages(image, image2);
 		JFrame frame3 = new JFrame("\tResults");
@@ -26,20 +26,31 @@ public class Hamed {
 		frame3.setVisible(true);
 		frame3.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		JPanel panel4 = new MyJPanel(image, 450, 250, true);
+		JPanel panel4 = new MyJPanel(image, 600, 240, true);
 		JFrame frame4 = new JFrame("Image1: " + image.getName());
 		frame4.getContentPane().add(panel4, BorderLayout.NORTH);
 		frame4.pack();
 		frame4.setVisible(true);
 		frame4.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		JPanel panel5 = new MyJPanel(image2, 450, 250, true);
+		JPanel panel5 = new MyJPanel(image2, 600, 240, true);
 		JFrame frame5 = new JFrame("Image2: " + image2.getName());
 		frame5.getContentPane().add(panel5, BorderLayout.NORTH);
 		frame5.pack();
-		frame5.setLocation(50, 50);
+		frame5.setLocation((int)screenWidth/2, 0);
 		frame5.setVisible(true);
 		frame5.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		File image3 = new File("qcms/qcm4.jpg");
+		JPanel panel1 = new MyJPanel(image3, false, 600, 240);
+		JFrame frame1 = new JFrame("Histogrammes: " + image3.getName());
+		frame1.getContentPane().add(panel1, BorderLayout.NORTH);
+		frame1.pack();
+		Dimension frame1Size = frame1.size();
+		int frame1Height = frame1Size.height;
+		frame1.setLocation((int)screenWidth/2, (int)(screenHeight-frame1Height));
+		frame1.setVisible(true);
+		frame1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 	}
 

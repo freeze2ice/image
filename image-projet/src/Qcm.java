@@ -7,43 +7,17 @@ import java.util.Arrays;
 import javax.imageio.ImageIO;
 
 public class Qcm {
-	
-	private File image;
+
 	private ArrayList<String> answers;
 	private	BufferedImage bi;
-	
+	private ArrayList<Integer> questions;
+
 	public Qcm(File image) {
-		this.image=image;
 		try {
 			bi = ImageIO.read(image);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	/*	
-		bi = colorFilter(bi, colorSeuil);
-		bi = grayImage(bi);
-		bi = binarizeImage(bi, 250);
-		bi = ouverture(bi);
-		if(secOuverture) bi = ouverture(bi);
-		this.setAnswers(detectObject(bi));
-	
-		ImageIcon icon = new ImageIcon(bi);
-		JLabel label = new JLabel();
-		label.setIcon(icon);
-		this.add(label, BorderLayout.NORTH);
-
-		JLabel label2 = new JLabel();
-		label2.setIcon(new ImageIcon(bi2));
-		this.add(label2, BorderLayout.WEST);
-
-		JLabel label3 = new JLabel();
-		label3.setIcon(new ImageIcon(bi3));
-		this.add(label3, BorderLayout.CENTER);
-
-		JLabel label4 = new JLabel();
-		label4.setIcon(new ImageIcon(bi4));
-		this.add(label4, BorderLayout.EAST);
-	*/
 	}
 
 	public int getPixel(BufferedImage image, int x, int y) {
@@ -169,7 +143,7 @@ public class Qcm {
 		}
 		return pixelsX;
 	}
-	
+
 	public int[] getPixelsY(BufferedImage image){
 		int[] pixelsY = new int[image.getHeight()];
 		for (int x = 0; x < image.getWidth(); x++) {
@@ -182,7 +156,7 @@ public class Qcm {
 		}
 		return pixelsY;
 	}
-	
+
 	public ArrayList<Integer> getListX(int[] pixelsX){
 		ArrayList<Integer> listX = new ArrayList<Integer>();
 		boolean start = false;
@@ -197,7 +171,7 @@ public class Qcm {
 		}
 		return listX;
 	}
-	
+
 	public ArrayList<Integer> getListY(int[] pixelsY){
 		ArrayList<Integer> listY = new ArrayList<Integer>();
 		boolean start = false;
@@ -210,9 +184,10 @@ public class Qcm {
 				start=false;
 			}
 		}
+		setQuestions(listY);
 		return listY;
 	}
-	
+
 	public ArrayList<String> detectObject(BufferedImage image){
 		ArrayList<Integer> listY = new ArrayList<Integer>();
 		ArrayList<Integer> listX = new ArrayList<Integer>();
@@ -220,10 +195,6 @@ public class Qcm {
 		listX = getListX(getPixelsX(image));
 		listY = getListY(getPixelsY(image));
 		answers = findAnswers(image, listX, listY);
-		/*System.out.println("------- "+ getImageName() + " ----------");
-		for(int i=0; i<answers.size(); i++){
-			System.out.println(i + ". " +answers.get(i));
-		}*/
 		return answers;
 	}
 
@@ -284,10 +255,6 @@ public class Qcm {
 		return answers;
 	}
 
-	public String getImageName(){
-		return image.getName();
-	}
-
 	public ArrayList<String> getAnswers() {
 		return answers;
 	}
@@ -303,14 +270,22 @@ public class Qcm {
 	public void setBi(BufferedImage bi) {
 		this.bi = bi;
 	}
-	
-	public void start(int colorSeuil, boolean secOuverture){
+
+	public void start(int colorSeuil, int binaryThreshold, boolean secOuverture){
 		bi = colorFilter(bi, colorSeuil);
 		bi = grayImage(bi);
-		bi = binarizeImage(bi, 250);
+		bi = binarizeImage(bi, binaryThreshold);
 		bi = ouverture(bi);
 		if(secOuverture) bi = ouverture(bi);
 		setAnswers(detectObject(bi));
 	}
-		
+
+	public ArrayList<Integer> getQuestions() {
+		return questions;
+	}
+
+	public void setQuestions(ArrayList<Integer> questions) {
+		this.questions = questions;
+	}
+
 }

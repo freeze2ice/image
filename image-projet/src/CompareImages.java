@@ -28,13 +28,12 @@ public class CompareImages extends JPanel {
 		Graphics2D g = output.createGraphics();
 		g.setFont(new Font("lucida", 0, 13));
 		g.setColor(Color.BLACK);
-
+		
 		ArrayList<String> answers1 = new ArrayList<String>();
 		ArrayList<String> answers2 = new ArrayList<String>();
-
 		
-		answers1 = getAnswers(image1, 450, true);
-		answers2 = getAnswers(image2, 250, false);
+		answers1 = getAnswers(image1, 600, 240, true);
+		answers2 = getAnswers(image2, 600, 240, true);
 
 		float note=0;
 		int line =0;
@@ -60,12 +59,31 @@ public class CompareImages extends JPanel {
 		return output;
 	}
 
-	public ArrayList<String> getAnswers(File image, int colorSeuil, boolean secOuverture){
+	public ArrayList<String> getAnswers(File image, int colorSeuil, int binaryThreshold, boolean secOuverture){
 		qcm = new Qcm(image);
-		qcm.start(colorSeuil, secOuverture);
+		qcm.start(colorSeuil, binaryThreshold, secOuverture);
 		ArrayList<String> answers = new ArrayList<String>();
 		answers = qcm.getAnswers();
 		return answers;
 	}
+	
+	public boolean sameSheets(File image1, File image2){
+		ArrayList<Integer> questionsSet1 = new ArrayList<Integer>();
+		ArrayList<Integer> questionsSet2 = new ArrayList<Integer>();
+		
+		qcm = new Qcm(image1);
+		qcm.start(600, 240, true);
+		questionsSet1 = qcm.getQuestions();
+		qcm = new Qcm(image2);
+		qcm.start(600, 240, true);
+		questionsSet2 = qcm.getQuestions();
+		for(int i =0; i<questionsSet1.size(); i++){
+			System.out.println(questionsSet1.get(i) + " " + questionsSet2.get(i));
+		}
+		if(questionsSet1.equals(questionsSet2)) return true;
+		return false;
+	}
+	
+	
 
 }
