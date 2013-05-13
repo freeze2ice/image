@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 
 import javax.imageio.ImageIO;
 
@@ -210,17 +209,13 @@ public class Qcm {
 		ArrayList<Integer> space = new ArrayList<Integer>();
 		int s=0;
 		for(int i=0; i<zerosListX.size()-1; i=i+2){
-			System.out.println(zerosListX.get(i) +" - "+ zerosListX.get(i+1));
-			//System.out.println("space: "+ (zerosListX.get(i+1) - zerosListX.get(i)));
 			s= zerosListX.get(i+1) - zerosListX.get(i);
 			space.add(s);
 		}
 		float average = average(space);
 		ArrayList<Integer> seqIndex = new ArrayList<Integer>() ;
-		System.out.println("average: "+average);
 		for(int i=0; i<space.size()-1; i++){
 			if(space.get(i) > average){
-				System.out.println("multiple sequence detected, i: " + i);
 				seqIndex.add(i);
 			}
 		}
@@ -229,22 +224,16 @@ public class Qcm {
 		ArrayList<Integer> listX2 = new ArrayList<Integer>();
 		do{
 			if(i+1<seqIndex.size()){
-				System.out.println("number of sequence: " + (i+1));
 				for(int j=seqIndex.get(i)*2+1; j<seqIndex.get(i+1)*2; j=j+2){
-					System.out.println(zerosListX.get(j) + " - " + zerosListX.get(j+1));
 					listX.add(zerosListX.get(j));
 					listX.add(zerosListX.get(j+1));
 				}
-				System.out.println("dqsdqsdqsd "+listX.get(0));
 				addSequences(listX);
 			} else{
-				System.out.println("number of sequence: " + (i+1));
 				for(int j=seqIndex.get(i)*2+1; j<zerosListX.size()-1; j=j+2){
-					System.out.println(zerosListX.get(j) + " - " + zerosListX.get(j+1));
 					listX2.add(zerosListX.get(j));
 					listX2.add(zerosListX.get(j+1));
 				}
-				System.out.println("fdsdqdqds "+listX2.get(0));
 				addSequences(listX2);
 			}
 			i++;
@@ -270,21 +259,14 @@ public class Qcm {
 		ArrayList<String> answers1 = new ArrayList<String>();
 		ArrayList<ArrayList<String>> answersSequence = new ArrayList<ArrayList<String>>();
 		listY = getListY(getPixelsY(image));
-		//listX = getListX(getPixelsX(image));
 		calculateSpace(getZerosListX(getPixelsX(image)));
-		//listX = sequences.get(1);
-		System.out.println("--------------------");
-		System.out.println(sequences.size());
-		for(int i=0; i<sequences.size(); i++){
-			for(int j=0; j<sequences.get(i).size(); j++){
-				System.out.println(sequences.get(i).get(j));
-			}
+		int i=0;
+		do{
 			listX = sequences.get(i);
 			answers1 = findAnswers(image, listX, listY);
 			answersSequence.add(answers1);
-			System.out.println("----------------" + answersSequence.size());
-		}
-		//System.out.println("answers1: " + answers1.get(0));
+			i++;
+		}while(i<sequences.size());
 		return answersSequence;
 	}
 

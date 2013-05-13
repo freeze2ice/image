@@ -79,16 +79,6 @@ public class MyJPanel extends JPanel {
 		label4.setIcon(new ImageIcon(histograms.plotHorizHistogram(bi)));
 		this.add(label4, BorderLayout.EAST);
 		
-		/*//qcm.calculateSpace(qcm.getZerosListX(qcm.getPixelsX(bi)));
-		qcm.start(550, 240, true);
-		ArrayList<ArrayList<String>> answersSeq = qcm.getAnswersSequence();
-		System.out.println(answersSeq.size());
-		for(int i=0; i<answersSeq.size(); i++){
-			for(int j=0; j<answersSeq.get(i).size(); j++){
-				System.out.println("set: "+i+": "+j+". "+answersSeq.get(i).get(j));
-			}
-		}*/
-		
 	}
 	
 }

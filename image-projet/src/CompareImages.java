@@ -32,8 +32,8 @@ public class CompareImages extends JPanel {
 		ArrayList<ArrayList<String>> answers1 = new ArrayList<ArrayList<String>>();
 		ArrayList<ArrayList<String>> answers2 = new ArrayList<ArrayList<String>>();
 
-		answers1 = getAnswers(image1, 600, 240, true);
-		answers2 = getAnswers(image2, 600, 240, true);
+		answers1 = getAnswers(image1, 450, 240, true);
+		answers2 = getAnswers(image2, 450, 240, true);
 
 		float note=0;
 		int line =0;
