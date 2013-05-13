@@ -13,7 +13,7 @@ import javax.swing.JPanel;
 public class CompareImages extends JPanel {
 
 	private Qcm qcm;
-	
+
 	public CompareImages(File image1, File image2) {
 		super(new BorderLayout());
 		BufferedImage bi = null;
@@ -28,10 +28,10 @@ public class CompareImages extends JPanel {
 		Graphics2D g = output.createGraphics();
 		g.setFont(new Font("lucida", 0, 13));
 		g.setColor(Color.BLACK);
-		
-		ArrayList<String> answers1 = new ArrayList<String>();
-		ArrayList<String> answers2 = new ArrayList<String>();
-		
+
+		ArrayList<ArrayList<String>> answers1 = new ArrayList<ArrayList<String>>();
+		ArrayList<ArrayList<String>> answers2 = new ArrayList<ArrayList<String>>();
+
 		answers1 = getAnswers(image1, 600, 240, true);
 		answers2 = getAnswers(image2, 600, 240, true);
 
@@ -39,38 +39,44 @@ public class CompareImages extends JPanel {
 		int line =0;
 		g.drawString("\nImage1 ---------- Image2", 5, 15);
 		g.drawLine(5, 20, 200, 20);
-		for(int j=1; j<answers1.size(); j++){
-			if(j<answers2.size()){
-				g.drawString(j +". " + answers1.get(j) + " ------------ "+j+ ". " + answers2.get(j), 20, (j*20+20));
-				if(answers1.get(j).equals(answers2.get(j)))	note++;
-				line = j;
-			} 
+		for(int j=0; j<answers1.size(); j++){
+			for(int i=1; i<answers1.get(j).size(); i++){
+				if(j<answers2.size()){
+					if(i<answers2.get(j).size()){
+						g.drawString((line+1) +". " + answers1.get(j).get(i) + " ------------ "+(line+1)+ ". " + answers2.get(j).get(i), 20, (line*20+40));
+						if(answers1.get(j).get(i).equals(answers2.get(j).get(i)))	note++;
+						line ++;
+					} 
+				}
+			}
 		}
-		if(line != answers1.size()-1){
-			line ++;
-			g.drawString((line) + " - " + (answers1.size()-1) +". Pas cochŽ", 20, line*20+20);
+
+		if((line--) != ((answers1.get(0).size()-1)*answers1.size())){
+			line++;
+			line++;
+			g.drawString((line--) + " - " + ((answers1.get(0).size()-1)*answers1.size()) +". Pas cochŽ", 20, line*20+40);
 		}
 		line++;
-		g.drawString("***************************", 20, line*20+20);
+		g.drawString("***************************", 20, line*20+40);
 		line++;
-		g.drawString("******* Note= " + (int)(note/(answers1.size()-1)*100) + "% *******", 20, line*20+20);
+		g.drawString("******* Note= " + (int)(note/((answers1.get(0).size()-1)*answers1.size())*100) + "% *******", 20, line*20+40);
 		line++;
-		g.drawString("***************************", 20, line*20+20);
+		g.drawString("***************************", 20, line*20+40);
 		return output;
 	}
 
-	public ArrayList<String> getAnswers(File image, int colorSeuil, int binaryThreshold, boolean secOuverture){
+	public ArrayList<ArrayList<String>> getAnswers(File image, int colorSeuil, int binaryThreshold, boolean secOuverture){
 		qcm = new Qcm(image);
 		qcm.start(colorSeuil, binaryThreshold, secOuverture);
-		ArrayList<String> answers = new ArrayList<String>();
-		answers = qcm.getAnswers();
-		return answers;
+		ArrayList<ArrayList<String>> answersSeq = new ArrayList<ArrayList<String>>();
+		answersSeq = qcm.getAnswersSequence();
+		return answersSeq;
 	}
-	
+
 	public boolean sameSheets(File image1, File image2){
 		ArrayList<Integer> questionsSet1 = new ArrayList<Integer>();
 		ArrayList<Integer> questionsSet2 = new ArrayList<Integer>();
-		
+
 		qcm = new Qcm(image1);
 		qcm.start(600, 240, true);
 		questionsSet1 = qcm.getQuestions();
@@ -83,7 +89,7 @@ public class CompareImages extends JPanel {
 		if(questionsSet1.equals(questionsSet2)) return true;
 		return false;
 	}
-	
-	
+
+
 
 }

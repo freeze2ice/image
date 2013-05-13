@@ -15,9 +15,9 @@ public class Hamed {
 		double screenWidth = screenSize.getWidth();
 		double screenHeight = screenSize.getHeight();
 		
-		File image = new File("qcms/qcmcolor8.jpg");
+		File image = new File("qcms/qcmcolor77.jpg");
 		File image2 = new File("qcms/qcmcolor7.jpg");
-		/*
+		
 		JPanel panel3 = new CompareImages(image, image2);
 		JFrame frame3 = new JFrame("\tResults");
 		frame3.getContentPane().add(panel3, BorderLayout.NORTH);
@@ -25,7 +25,7 @@ public class Hamed {
 		frame3.setLocation((int)screenWidth-250, 0);
 		frame3.setVisible(true);
 		frame3.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+		/*
 		JPanel panel4 = new MyJPanel(image, 600, 240, true);
 		JFrame frame4 = new JFrame("Image1: " + image.getName());
 		frame4.getContentPane().add(panel4, BorderLayout.NORTH);

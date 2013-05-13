@@ -4,13 +4,16 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
+
 import javax.imageio.ImageIO;
 
 public class Qcm {
 
-	private ArrayList<String> answers;
+	private ArrayList<ArrayList<String>> answersSequence;
 	private	BufferedImage bi;
 	private ArrayList<Integer> questions;
+	private ArrayList<ArrayList<Integer>> sequences = new ArrayList<ArrayList<Integer>>();
 
 	public Qcm(File image) {
 		try {
@@ -207,8 +210,8 @@ public class Qcm {
 		ArrayList<Integer> space = new ArrayList<Integer>();
 		int s=0;
 		for(int i=0; i<zerosListX.size()-1; i=i+2){
-			System.out.println("end , start: "+ zerosListX.get(i+1) +" "+ zerosListX.get(i));
-			System.out.println("space: "+ (zerosListX.get(i+1) - zerosListX.get(i)));
+			System.out.println(zerosListX.get(i) +" - "+ zerosListX.get(i+1));
+			//System.out.println("space: "+ (zerosListX.get(i+1) - zerosListX.get(i)));
 			s= zerosListX.get(i+1) - zerosListX.get(i);
 			space.add(s);
 		}
@@ -221,11 +224,32 @@ public class Qcm {
 				seqIndex.add(i);
 			}
 		}
-		for(int i=0; i< seqIndex.size(); i++){
-			System.out.println(zerosListX.get(seqIndex.get(i)*2+1));
-		}
-		
-		return space;
+		int i=0;
+		ArrayList<Integer> listX = new ArrayList<Integer>();
+		ArrayList<Integer> listX2 = new ArrayList<Integer>();
+		do{
+			if(i+1<seqIndex.size()){
+				System.out.println("number of sequence: " + (i+1));
+				for(int j=seqIndex.get(i)*2+1; j<seqIndex.get(i+1)*2; j=j+2){
+					System.out.println(zerosListX.get(j) + " - " + zerosListX.get(j+1));
+					listX.add(zerosListX.get(j));
+					listX.add(zerosListX.get(j+1));
+				}
+				System.out.println("dqsdqsdqsd "+listX.get(0));
+				addSequences(listX);
+			} else{
+				System.out.println("number of sequence: " + (i+1));
+				for(int j=seqIndex.get(i)*2+1; j<zerosListX.size()-1; j=j+2){
+					System.out.println(zerosListX.get(j) + " - " + zerosListX.get(j+1));
+					listX2.add(zerosListX.get(j));
+					listX2.add(zerosListX.get(j+1));
+				}
+				System.out.println("fdsdqdqds "+listX2.get(0));
+				addSequences(listX2);
+			}
+			i++;
+		}while(i<seqIndex.size());
+		return listX;
 	}
 
 	public float average(ArrayList<Integer> space){
@@ -236,20 +260,32 @@ public class Qcm {
 		return sum/space.size();
 	}
 
-	public ArrayList<ArrayList<Integer>> createSequences(ArrayList<Integer> listX){
-		ArrayList<ArrayList<Integer>> sequences = new ArrayList<ArrayList<Integer>>();
-		for(int i=0; i<listX.size(); i++){
-
-		}
-		return sequences;
+	public void addSequences(ArrayList<Integer> listX){
+		sequences.add(listX);
 	}
 
-	public ArrayList<String> detectObject(BufferedImage image){
+	public ArrayList<ArrayList<String>> detectObject(BufferedImage image){
 		ArrayList<Integer> listY = new ArrayList<Integer>();
 		ArrayList<Integer> listX = new ArrayList<Integer>();
-		listX = getListX(getPixelsX(image));
+		ArrayList<String> answers1 = new ArrayList<String>();
+		ArrayList<ArrayList<String>> answersSequence = new ArrayList<ArrayList<String>>();
 		listY = getListY(getPixelsY(image));
-		return findAnswers(image, listX, listY);
+		//listX = getListX(getPixelsX(image));
+		calculateSpace(getZerosListX(getPixelsX(image)));
+		//listX = sequences.get(1);
+		System.out.println("--------------------");
+		System.out.println(sequences.size());
+		for(int i=0; i<sequences.size(); i++){
+			for(int j=0; j<sequences.get(i).size(); j++){
+				System.out.println(sequences.get(i).get(j));
+			}
+			listX = sequences.get(i);
+			answers1 = findAnswers(image, listX, listY);
+			answersSequence.add(answers1);
+			System.out.println("----------------" + answersSequence.size());
+		}
+		//System.out.println("answers1: " + answers1.get(0));
+		return answersSequence;
 	}
 
 	public ArrayList<String> findAnswers(BufferedImage image, ArrayList<Integer> listX, ArrayList<Integer> listY){
@@ -309,14 +345,6 @@ public class Qcm {
 		return answers;
 	}
 
-	public ArrayList<String> getAnswers() {
-		return answers;
-	}
-
-	public void setAnswers(ArrayList<String> answers) {
-		this.answers = answers;
-	}
-
 	public BufferedImage getBi() {
 		return bi;
 	}
@@ -331,7 +359,7 @@ public class Qcm {
 		bi = binarizeImage(bi, binaryThreshold);
 		bi = ouverture(bi);
 		if(secOuverture) bi = ouverture(bi);
-		setAnswers(detectObject(bi));
+		setAnswersSequence(detectObject(bi));
 	}
 
 	public ArrayList<Integer> getQuestions() {
@@ -340,6 +368,14 @@ public class Qcm {
 
 	public void setQuestions(ArrayList<Integer> questions) {
 		this.questions = questions;
+	}
+
+	public ArrayList<ArrayList<String>> getAnswersSequence() {
+		return answersSequence;
+	}
+
+	public void setAnswersSequence(ArrayList<ArrayList<String>> answersSequence) {
+		this.answersSequence = answersSequence;
 	}
 
 }
