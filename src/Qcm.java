@@ -205,7 +205,7 @@ public class Qcm {
 		return listX;
 	}
 
-	public ArrayList<Integer> calculateSpace(ArrayList<Integer> zerosListX){
+	public void calculateSpace(ArrayList<Integer> zerosListX){
 		ArrayList<Integer> space = new ArrayList<Integer>();
 		int s=0;
 		for(int i=0; i<zerosListX.size()-1; i=i+2){
@@ -219,26 +219,37 @@ public class Qcm {
 				seqIndex.add(i);
 			}
 		}
-		int i=0;
 		ArrayList<Integer> listX = new ArrayList<Integer>();
 		ArrayList<Integer> listX2 = new ArrayList<Integer>();
-		do{
+
+		for(int i=0; i<seqIndex.size(); i++){
+			listX = new ArrayList<Integer>();
 			if(i+1<seqIndex.size()){
+				System.out.println("number of sequence: " + (i+1));
 				for(int j=seqIndex.get(i)*2+1; j<seqIndex.get(i+1)*2; j=j+2){
+					System.out.println(zerosListX.get(j) + " - " + zerosListX.get(j+1));
 					listX.add(zerosListX.get(j));
 					listX.add(zerosListX.get(j+1));
 				}
 				addSequences(listX);
 			} else{
+				System.out.println("number of sequence: " + (i+1));
 				for(int j=seqIndex.get(i)*2+1; j<zerosListX.size()-1; j=j+2){
+					System.out.println(zerosListX.get(j) + " - " + zerosListX.get(j+1));
 					listX2.add(zerosListX.get(j));
 					listX2.add(zerosListX.get(j+1));
 				}
 				addSequences(listX2);
 			}
-			i++;
-		}while(i<seqIndex.size());
-		return listX;
+		}
+		int line = 0;
+		for(int j=0; j<sequences.size(); j++){
+			for(int k=0; k<sequences.get(j).size(); k++){
+				line++;
+				System.out.println("sequence: " + j);
+				System.out.println(line +". " + sequences.get(j).get(k));
+			}
+		}
 	}
 
 	public float average(ArrayList<Integer> space){

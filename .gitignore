@@ -1,11 +1,4 @@
-.metadata/
-image-projet/bin/
-ImageTD2/
-ImageTd2_0/
-ImageTd3/
-image-projet/.classpath
-image-projet/.project
-image-projet/.settings/
-imageTd4/
-imageTd5/
-image-projet copy/
+.DS_Store
+.classpath
+.project
+.settings/
